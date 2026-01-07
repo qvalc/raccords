@@ -6,7 +6,15 @@
   <title>Raccords plomberie — Galerie</title>
   <style>
     body{font-family:Arial, sans-serif; margin:20px; line-height:1.4}
+
+    /* ✅ header + logo */
     header{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:18px}
+    .logo{
+      height:48px;     /* ajuste si besoin */
+      width:auto;
+      flex-shrink:0;
+    }
+
     input[type="search"]{padding:10px 12px; border:1px solid #ccc; border-radius:10px; min-width:260px}
     select{padding:10px 12px; border:1px solid #ccc; border-radius:10px}
     h1{margin:0}
@@ -79,6 +87,9 @@
 <body>
 
 <header class="bar">
+  <!-- ✅ LOGO à gauche -->
+  <img src="logo-site.png" alt="Logo" class="logo">
+
   <h1>Raccords plomberie — Galerie</h1>
 
   <select id="cat"></select>
