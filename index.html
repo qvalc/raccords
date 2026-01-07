@@ -11,16 +11,64 @@
     select{padding:10px 12px; border:1px solid #ccc; border-radius:10px}
     h1{margin:0}
     h2{margin:28px 0 12px}
-    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px}
-    figure{margin:0; border:1px solid #e1e1e1; border-radius:12px; padding:10px; background:#fff}
-    img{width:100%; height:auto; display:block; border-radius:10px}
+
+    /* ✅ grille */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:14px;
+      align-items:stretch; /* important */
+    }
+
+    /* ✅ carte uniforme + prix en bas */
+    figure{
+      margin:0;
+      border:1px solid #e1e1e1;
+      border-radius:12px;
+      padding:10px;
+      background:#fff;
+
+      display:flex;          /* NEW */
+      flex-direction:column; /* NEW */
+      height:100%;           /* NEW */
+    }
+
+    /* ✅ zone image identique partout */
+    .thumb{
+      height:160px;                 /* ajuste si tu veux (140/180/200) */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:10px;
+      background:#fff;
+    }
+    .thumb img{
+      max-width:100%;
+      max-height:100%;
+      width:auto;
+      height:auto;
+      display:block;
+      border-radius:10px;
+    }
+
     figcaption{font-size:13px; margin-top:8px; word-break:break-word}
     .muted{color:#666; font-size:13px}
     .missing{font-size:12px; color:#c00; margin-top:8px}
-    .price{display:flex; gap:8px; align-items:center; margin-top:10px}
+
+    /* ✅ prix aligné en bas */
+    .price{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-top:auto;      /* NEW : pousse le bloc prix en bas */
+      padding-top:10px;     /* NEW : espace régulier */
+    }
+
     .price label{font-size:12px; color:#333}
     .price input{width:110px; padding:8px 10px; border:1px solid #ccc; border-radius:10px}
     .price .eur{font-size:12px; color:#555}
+
     .bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border:1px solid #e1e1e1; border-radius:999px; font-size:13px; background:#fff}
     .dot{width:8px; height:8px; border-radius:999px; background:#bbb}
@@ -100,10 +148,7 @@ const IMAGES = {
 /** 2) Où se trouve ton fichier Excel des prix (à la racine du dépôt) */
 const PRICE_XLSX_URL = "prix.xlsx";
 
-/** 3) Stockage des prix chargés depuis l’Excel
-    clé = "dossier/fichier.png"
-    valeur = nombre (prix TVAC)
-*/
+/** 3) Stockage des prix chargés depuis l’Excel */
 let PRICE_MAP = Object.create(null);
 
 // UI
@@ -137,7 +182,6 @@ async function loadPricesXlsx(){
     const ws = wb.Sheets[wb.SheetNames[0]];
     if(!ws) throw new Error("Feuille Excel introuvable");
 
-    // Convertit en objets selon en-têtes (path, prix_tvac)
     const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
 
     const map = Object.create(null);
@@ -148,7 +192,6 @@ async function loadPricesXlsx(){
       let price = r.prix_tvac ?? r.Prix_TVAC ?? r.PRIX_TVAC ?? r.prix ?? r.Prix ?? "";
       if(!path) continue;
 
-      // Accepte "12,50" ou "12.50"
       if(typeof price === "string") price = price.replace(",", ".").trim();
       const num = Number(price);
 
@@ -168,7 +211,6 @@ async function loadPricesXlsx(){
 
 function formatPrice(v){
   if(!Number.isFinite(v)) return "";
-  // Format simple "12.50"
   return (Math.round(v * 100) / 100).toFixed(2);
 }
 
@@ -191,12 +233,12 @@ function render(){
     for(const f of files){
       const src = `${cat}/${encodeURIComponent(f)}`;
       const label = f.replace(/\.png$/i, "");
-      const key = `${cat}/${f}`; // clé identique à la colonne path dans Excel
+      const key = `${cat}/${f}`;
       const price = PRICE_MAP[key];
 
       html += `
         <figure>
-          <a href="${src}" target="_blank" rel="noopener">
+          <a class="thumb" href="${src}" target="_blank" rel="noopener">
             <img src="${src}" alt="${label}"
               onerror="this.style.display='none'; this.closest('figure').insertAdjacentHTML('beforeend','<div class=\\'missing\\'>❌ Introuvable : ${src}</div>')">
           </a>
@@ -231,7 +273,6 @@ catSel.addEventListener("change", render);
 q.addEventListener("input", render);
 
 (async function init(){
-  // Charge les prix puis affiche
   await loadPricesXlsx();
   render();
 })();
