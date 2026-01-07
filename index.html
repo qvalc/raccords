@@ -1,13 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Raccords</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raccords plomberie — Galerie</title>
+  <style>
+    body{font-family:Arial, sans-serif; margin:20px; line-height:1.4}
+    header{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:18px}
+    input{padding:10px 12px; border:1px solid #ccc; border-radius:10px; min-width:260px}
+    select{padding:10px 12px; border:1px solid #ccc; border-radius:10px}
+    h1{margin:0}
+    h2{margin:28px 0 12px}
+    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px}
+    figure{margin:0; border:1px solid #e1e1e1; border-radius:12px; padding:10px; background:#fff}
+    img{width:100%; height:auto; display:block; border-radius:10px}
+    figcaption{font-size:13px; margin-top:8px; word-break:break-word}
+    .muted{color:#666; font-size:13px}
+  </style>
 </head>
 <body>
 
-<h1>GitHub Pages fonctionne</h1>
-<p>Première page OK.</p>
+<header>
+  <h1>Raccords plomberie — Galerie</h1>
+  <select id="cat"></select>
+  <input id="q" type="search" placeholder="Rechercher (ex: coude, té, 16, 20…)" />
+  <span class="muted" id="count"></span>
+</header>
+
+<div id="app"></div>
+
+<script>
+const IMAGES = {
+  "a-souder": [
+    "coude-femelle.png","coude-male.png","coude-union-femelle.png","coude-union-male.png",
+    "rac-femelle.png","rac-male.png","union-femelle.png","union-male.png"
+  ],
+  "acc-tube-polyethylene/huot": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
+  "acc-tube-polyethylene/plasson": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
+  "acc-tube-polyethylene/rexuo": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
+  "biconnes": [
+    "coude-femelle.png","coude-ff.png","coude-male.png","manchon-reduit.png",
+    "manchon.png","rac-femelle.png","rac-male.png","te-egal.png"
+  ],
+  "laiton": [
+    "allonge.png","bouchon.png","coude-ff.png","coude-mf.png","coude-union.png",
+    "nipple-reduite.png","nipple.png","rac-union.png","reduction-f-f.png",
+    "reduction-f-m.png","te-egal.png","tes-1.png","tes-2.png",
+    "tetine-femelle.png","tetine-male.png"
+  ],
+  "pex-a-sertir": [
+    "bouchon-2.png","bouchon.png","collecteur-2-bleu.png","collecteur-2-rouge.png",
+    "collecteur-3-bleu.png","collecteur-3-rouge.png","collecteur-4-bleu.png",
+    "collecteur-4-rouge.png","collecteur-5-bleu.png","collecteur-5-rouge.png",
+    "collecteur-6-bleu.png","collecteur-6-rouge.png","coude-egal.png",
+    "coude-femelle-el.png","coude-femelle.png","coude-male.png",
+    "classee-double.png","classee-simple.png","manchon.png",
+    "rac-femelle-el.png","racord-femelle.png","racord-male.png",
+    "te-egal.png","te-femelle.png","te-male.png","te-reduit.png"
+  ],
+  "pex": [
+    "bouchon.png","coude-f-el.png","coude-femelle.png","coude-male.png",
+    "classee-double.png","classee-simple.png","manchon.png",
+    "racord-f-el.png","racord-femelle.png","racord-male.png",
+    "te-femelle.png","te-male.png","te-reduit.png","te.png","vanne.png"
+  ],
+  "push": [
+    "bague-de-montage.png","bouchon.png","coude-egal.png","coude-femelle-el.png",
+    "coude-male.png","classee.png","insert.png","jonction-reduite.png",
+    "manchon.png","rac-femelle-el.png","rac-male.png","te-egal.png",
+    "te-femelle.png","te-male.png","te-reduit.png","vanne-ecrou-libre.png"
+  ]
+};
+
+const app = document.getElementById("app");
+const catSel = document.getElementById("cat");
+const q = document.getElementById("q");
+const count = document.getElementById("count");
+const categories = Object.keys(IMAGES);
+
+catSel.innerHTML = `<option value="__all__">Toutes les catégories</option>` +
+  categories.map(c => `<option value="${c}">${c}</option>`).join("");
+
+function render(){
+  const selected = catSel.value;
+  const query = q.value.toLowerCase();
+  let total = 0, html = "";
+  for(const cat of categories){
+    if(selected!=="__all__" && cat!==selected) continue;
+    const files = IMAGES[cat].filter(f=>f.toLowerCase().includes(query));
+    if(!files.length) continue;
+    total += files.length;
+    html += `<h2>${cat}</h2><div class="grid">`;
+    for(const f of files){
+      const src = `${cat}/${encodeURIComponent(f)}`;
+      html += `<figure><a href="${src}" target="_blank">
+        <img src="${src}" alt="${f.replace('.png','')}"></a>
+        <figcaption>${f.replace('.png','')}</figcaption></figure>`;
+    }
+    html += `</div>`;
+  }
+  app.innerHTML = html || `<p class="muted">Aucune image</p>`;
+  count.textContent = total ? total+" image(s)" : "";
+}
+
+catSel.onchange = render;
+q.oninput = render;
+render();
+</script>
 
 </body>
 </html>
