@@ -122,7 +122,7 @@ const IMAGES = {
   "acc-tube-polyethylene/plasson": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
   "acc-tube-polyethylene/rexuo": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
   "bicones": ["coude-femelle.png","coude-ff.png","coude-male.png","manchon-reduit.png","manchon.png","rac-femelle.png","rac-male.png","te-egal.png"],
-  "laiton": ["allonge.png","bouchon.png","coude-f-f.png","coude-m-f.png","coude-union.png","nipple-reduite.png","nipple.png","rac-union.png","reduction-f-f.png","reduction-f-m.png","te-egal.png","tes-1.png","tes-2.png","tetine-femelle.png","tetine-male.png"],
+  "laiton": ["allonge.png","bouchon.png","coude-f-f.png","coude-m-f.png","coude-union.png","union-coudee.png","laiton-bonnet.png","laiton-culasse.png","laiton-manchon.png","nipple-reduite.png","nipple.png","rac-union.png","reduction-f-f.png","reduction-f-m.png","reduction-t-f.png","te-egal.png","tes-1.png","tes-2.png","tes-3.jpg","tetine-femelle.png","tetine-male.png"],
 
   /* ✅ SÉPARATION : Collecteurs hors "pex-a-sertir" */
   "collecteurs": ["collecteur-2-bleu.png","collecteur-2-rouge.png","collecteur-3-bleu.png","collecteur-3-rouge.png","collecteur-4-bleu.png","collecteur-4-rouge.png","collecteur-5-bleu.png","collecteur-5-rouge.png","collecteur-6-bleu.png","collecteur-6-rouge.png"],
@@ -146,7 +146,7 @@ const CAT_SIZES = {
   "acc-tube-polyethylene/rexuo": ["Ø25", "Ø32"],
 
   "bicones": ["3/8", "1/2", "3/4", "4/4", "5/4"],
-  "laiton": ["3/8", "1/2", "3/4", "4/4", "5/4"],
+  "laiton": ["allonge.png","bouchon.png","coude-f-f.png","coude-m-f.png","coude-union.png","union-coudee.png","laiton-bonnet.png","laiton-culasse.png","laiton-manchon.png","nipple-reduite.png","nipple.png","rac-union.png","reduction-f-f.png","reduction-f-m.png","reduction-t-f.png","te-egal.png","tes-1.png","tes-2.png","tes-3.jpg","tetine-femelle.png","tetine-male.png"],
 
   /* ✅ Collecteurs séparés mais mêmes choix de Ø si tu relies aux tubes PEX */
   "collecteurs": ["3/4"],
@@ -169,6 +169,25 @@ const PRICE_MANIFEST_URL = "prix/manifest.json";
 
 /** Map prix: clé = "path|taille" => prix_tvac */
 let PRICE_MAP = Object.create(null);
+
+/** Index tailles disponibles par article (dérivé des fichiers prix) */
+let SIZES_BY_PATH = Object.create(null);
+
+function buildSizesByPath(priceMap){
+  const idx = Object.create(null);
+  for(const k of Object.keys(priceMap)){
+    const parts = k.split("|");
+    const pathKey = parts[0];
+    const taille = (parts[1] ?? "").toString().trim();
+    if(!pathKey || !taille) continue;
+    (idx[pathKey] ||= []).push(taille);
+  }
+  for(const p of Object.keys(idx)){
+    idx[p] = Array.from(new Set(idx[p])).sort();
+  }
+  return idx;
+}
+
 
 // UI
 const app = document.getElementById("app");
@@ -232,6 +251,8 @@ async function fetchXlsxAsPriceMap(xlsxUrl){
 }
 
 async function loadPricesFromFolder(){
+  // Charge ce qui est disponible. Si un fichier XLSX est manquant / invalide,
+  // on continue quand même pour ne pas bloquer les catégories déjà prêtes.
   try{
     setPriceIndicator(false, "Prix : chargement (dossier prix/)…");
 
@@ -241,18 +262,34 @@ async function loadPricesFromFolder(){
     }
 
     const merged = Object.create(null);
+    let okFiles = 0, badFiles = 0;
 
     for(const fname of files){
       const url = `prix/${fname}`;
-      const { map } = await fetchXlsxAsPriceMap(url);
-      for(const k of Object.keys(map)) merged[k] = map[k];
+      try{
+        const { map } = await fetchXlsxAsPriceMap(url);
+        for(const k of Object.keys(map)) merged[k] = map[k];
+        okFiles++;
+      }catch(e){
+        badFiles++;
+        console.warn("[prix] fichier ignoré :", url, e);
+      }
     }
 
     PRICE_MAP = merged;
-    setPriceIndicator(true, `Prix : ${Object.keys(PRICE_MAP).length} valeur(s) chargée(s)`);
+    SIZES_BY_PATH = buildSizesByPath(PRICE_MAP);
+
+    const n = Object.keys(PRICE_MAP).length;
+    if(okFiles > 0 && n > 0){
+      const extra = badFiles ? ` (${okFiles} ok, ${badFiles} en erreur)` : ` (${okFiles} ok)`;
+      setPriceIndicator(true, `Prix : ${n} valeur(s) chargée(s)${extra}`);
+    }else{
+      setPriceIndicator(false, "Prix : aucun prix exploitable (manifest/xlsx)");
+    }
   }catch(e){
     PRICE_MAP = Object.create(null);
-    setPriceIndicator(false, "Prix : dossier prix/ introuvable ou manifest/xlsx invalide");
+    SIZES_BY_PATH = Object.create(null);
+    setPriceIndicator(false, "Prix : dossier prix/ introuvable ou manifest invalide");
     console.error(e);
   }
 }
@@ -292,7 +329,9 @@ function render(){
       const src = `${cat}/${encodeURIComponent(f)}`;
       const label = f.replace(/\.png$/i, "");
       const pathKey = `${cat}/${f}`;
-      const options = getSizeOptions(cat, f);
+      const options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
+        ? SIZES_BY_PATH[pathKey]
+        : getSizeOptions(cat, f);
       const defaultSize = options[0] || "";
       const currentSize = getStoredSize(pathKey, defaultSize);
 
