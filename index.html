@@ -101,7 +101,7 @@
   <input id="q" type="search" placeholder="Rechercher (ex: coude, té, 16, 20…)" />
   <span class="muted" id="count"></span>
 
-  <span class="pill" title="Lecture du fichier prix.xlsx à la racine du dépôt">
+  <span class="pill" title="Lecture des fichiers XLSX dans le dossier prix/">
     <span id="priceDot" class="dot"></span>
     <span id="priceStatus">Prix : en attente…</span>
   </span>
@@ -165,7 +165,7 @@ function getSizeOptions(cat, file){
   return CAT_SIZES[cat] || [""];
 }
 
-const PRICE_XLSX_URL = "prix.xlsx";
+const PRICE_MANIFEST_URL = "prix/manifest.json";
 
 /** Map prix: clé = "path|taille" => prix_tvac */
 let PRICE_MAP = Object.create(null);
@@ -193,42 +193,67 @@ function normalizeSize(s){
   return String(s || "").trim();
 }
 
-async function loadPricesXlsx(){
+async function fetchJson(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
+  return res.json();
+}
+
+async function fetchXlsxAsPriceMap(xlsxUrl){
+  const res = await fetch(xlsxUrl, { cache: "no-store" });
+  if(!res.ok) throw new Error(`HTTP ${res.status} sur ${xlsxUrl}`);
+
+  const buf = await res.arrayBuffer();
+  const wb = XLSX.read(buf, { type: "array" });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  if(!ws) throw new Error(`Feuille Excel introuvable dans ${xlsxUrl}`);
+
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+  const map = Object.create(null);
+  let c = 0;
+
+  for(const r of rows){
+    const path = String(r.path || r.Path || r.PATH || "").trim();
+    const taille = normalizeSize(r.taille ?? r.Taille ?? r.TAILLE ?? "");
+    let price = r.prix_tvac ?? r.Prix_TVAC ?? r.PRIX_TVAC ?? r.prix ?? r.Prix ?? "";
+    if(!path) continue;
+
+    if(typeof price === "string") price = price.replace(",", ".").trim();
+    const num = Number(price);
+
+    if(Number.isFinite(num)){
+      map[`${path}|${taille}`] = num;
+      c++;
+    }
+  }
+
+  return { map, count: c };
+}
+
+async function loadPricesFromFolder(){
   try{
-    setPriceIndicator(false, "Prix : chargement…");
-    const res = await fetch(PRICE_XLSX_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
+    setPriceIndicator(false, "Prix : chargement (dossier prix/)…");
 
-    const buf = await res.arrayBuffer();
-    const wb = XLSX.read(buf, { type: "array" });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    if(!ws) throw new Error("Feuille Excel introuvable");
-
-    const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
-
-    const map = Object.create(null);
-    let c = 0;
-
-    for(const r of rows){
-      const path = String(r.path || r.Path || r.PATH || "").trim();
-      const taille = normalizeSize(r.taille ?? r.Taille ?? r.TAILLE ?? "");
-      let price = r.prix_tvac ?? r.Prix_TVAC ?? r.PRIX_TVAC ?? r.prix ?? r.Prix ?? "";
-      if(!path) continue;
-
-      if(typeof price === "string") price = price.replace(",", ".").trim();
-      const num = Number(price);
-
-      if(Number.isFinite(num)){
-        map[`${path}|${taille}`] = num;
-        c++;
-      }
+    const files = await fetchJson(PRICE_MANIFEST_URL);
+    if(!Array.isArray(files) || files.length === 0){
+      throw new Error("manifest vide ou invalide");
     }
 
-    PRICE_MAP = map;
-    setPriceIndicator(true, `Prix : ${c} valeur(s) chargée(s)`);
+    const merged = Object.create(null);
+
+    for(const fname of files){
+      const url = `prix/${fname}`;
+      const { map } = await fetchXlsxAsPriceMap(url);
+      for(const k of Object.keys(map)) merged[k] = map[k];
+    }
+
+    PRICE_MAP = merged;
+    setPriceIndicator(true, `Prix : ${Object.keys(PRICE_MAP).length} valeur(s) chargée(s)`);
   }catch(e){
     PRICE_MAP = Object.create(null);
-    setPriceIndicator(false, `Prix : fichier introuvable ou invalide (${PRICE_XLSX_URL})`);
+    setPriceIndicator(false, "Prix : dossier prix/ introuvable ou manifest/xlsx invalide");
+    console.error(e);
   }
 }
 
@@ -301,7 +326,7 @@ function render(){
               value="${price !== undefined ? formatPrice(price) : ""}"
               placeholder="—"
               readonly
-              title="Prix chargé depuis prix.xlsx (modifiable via Excel)"
+              title="Prix chargé depuis les fichiers du dossier prix/ (modifiable via Excel)"
             />
             <span class="eur">€</span>
           </div>
@@ -333,7 +358,7 @@ catSel.addEventListener("change", render);
 q.addEventListener("input", render);
 
 (async function init(){
-  await loadPricesXlsx();
+  await loadPricesFromFolder();
   render();
 })();
 </script>
