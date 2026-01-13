@@ -229,6 +229,13 @@ const IMAGES = {
     "bague-de-montage.png","bouchon.png","coude-egal.png","coude-femelle-el.png","coude-male.png","culasse.png","insert.png",
     "jonction-reduite.png","manchon.png","rac-femelle-el.png","rac-male.png","te-egal.png","te-femelle.png","te-male.png",
     "te-reduit.png","vanne-ecrou-libre.png"
+  ],
+
+  /* ✅ NOUVEAU : Tube Alpex */
+  "tube-alpex": [
+    "Tube-Alpex.png",
+    "Tube-Alpex-isolé-rouge.png",
+    "Tube-Alpex-isolé-bleu.png"
   ]
 };
 
@@ -239,6 +246,11 @@ const DISPLAY_NAMES = {
   "laiton/laiton-manchon.png": "manchon",
   "laiton/tes-1.png":          "Te ecrou libre",
   "laiton/tes-2.png":          "Te ecrou libre 45°",
+
+  /* ✅ NOUVEAU : noms Tube Alpex */
+  "tube-alpex/Tube-Alpex.png":             "Tube Alpex",
+  "tube-alpex/Tube-Alpex-isolé-rouge.png": "Tube Alpex isolé rouge",
+  "tube-alpex/Tube-Alpex-isolé-bleu.png":  "Tube Alpex isolé bleu"
 };
 
 /** Options taille (fallback uniquement si pas de tailles dans l’Excel) */
@@ -266,7 +278,10 @@ const CAT_SIZES = {
 
   "pex-a-sertir": ["Ø16", "Ø20", "Ø26"],
   "pex": ["Ø16", "Ø20", "Ø26"],
-  "push": ["Ø16", "Ø20"]
+  "push": ["Ø16", "Ø20"],
+
+  /* ✅ NOUVEAU : Tube Alpex (fallback "vide" si pas d'Excel) */
+  "tube-alpex": ["16", "20", "26"]
 };
 
 const MALE_FEM_SIZES = ["1/2", "3/4"];
@@ -296,14 +311,15 @@ const catSelect = document.getElementById("catSelect");
 const CATEGORY_UI = [
   { id: "laiton", label: "Raccords Laiton" },
   { id: "bicones", label: "Raccords Bicône" },
-  { id: "pex", label: "Raccords Alpex" },
-  { id: "pex-a-sertir", label: "Raccords Alpex à sertir" },
   { id: "push", label: "Raccords Push" },
   { id: "collecteurs", label: "Collecteurs" },
   { id: "acc-tube-polyethylene/huot", label: "Raccords Huot" },
   { id: "acc-tube-polyethylene/rexuo", label: "Raccords Rexuo" },
   { id: "acc-tube-polyethylene/plasson", label: "Raccords Plasson" },
-  { id: "geka", label: "Raccords Geka" }
+  { id: "geka", label: "Raccords Geka" },
+  { id: "pex", label: "Raccords Alpex" },
+  { id: "pex-a-sertir", label: "Raccords Alpex à sertir" },
+  { id: "tube-alpex", label: "Tube Alpex" },
 ];
 
 /** catégories dispo (en respectant HIDE_A_SOUDER) */
@@ -344,26 +360,17 @@ function buildCatSelect(){
 }
 
 function syncCategoryUI(){
-  // sync select
   if(catSelect) catSelect.value = activeCat;
 
-  // sync boutons (classe active)
   document.querySelectorAll("#catButtons .catBtn").forEach(b => {
     b.classList.toggle("active", b.dataset.cat === activeCat);
   });
 
-  // ajuste les boutons à la largeur disponible
   fitCategoryButtons();
 }
 
-/**
- * Auto-fit: réduit font/padding/gap jusqu'à ce que la ligne tienne.
- * Si même le plus petit ne tient pas, on autorise un scroll horizontal.
- */
 function fitCategoryButtons(){
   if(!catButtons) return;
-
-  // Si boutons cachés (mobile), inutile
   if(getComputedStyle(catButtons).display === "none") return;
 
   const root = document.documentElement;
@@ -384,7 +391,6 @@ function fitCategoryButtons(){
 
   const fits = () => catButtons.scrollWidth <= catButtons.clientWidth + 1;
 
-  // par défaut: pas de scroll
   catButtons.style.overflowX = "hidden";
 
   apply(presets[0]);
@@ -395,7 +401,6 @@ function fitCategoryButtons(){
     if(fits()) return;
   }
 
-  // dernier recours: scroll horizontal
   catButtons.style.overflowX = "auto";
   catButtons.style.webkitOverflowScrolling = "touch";
 }
@@ -430,7 +435,6 @@ async function fetchXlsxAsPriceMap(xlsxUrl){
 
     if(!path) continue;
 
-    /* ✅ Sécurité: normalise et corrige collecteur -> collecteurs */
     path = path.replaceAll("\\", "/").replace(/^\.?\//, "");
     if(path.startsWith("collecteur/")) path = "collecteurs/" + path.slice("collecteur/".length);
 
@@ -445,7 +449,6 @@ async function fetchXlsxAsPriceMap(xlsxUrl){
   return { map };
 }
 
-/** Construit un index path -> [tailles...] depuis PRICE_MAP */
 function buildSizesByPath(priceMap){
   const idx = Object.create(null);
 
@@ -457,7 +460,6 @@ function buildSizesByPath(priceMap){
     const taille = normalizeSize(k.slice(sep + 1));
     if(!pathKey || !taille) continue;
 
-    // sécurité: jamais de noms d'images dans les tailles
     if(/\.(png|jpg|jpeg|webp)$/i.test(taille)) continue;
 
     (idx[pathKey] ||= []).push(taille);
@@ -513,7 +515,7 @@ function setStoredSize(key, val){
 }
 
 function render(){
-  const query = ""; // recherche supprimée
+  const query = "";
 
   const cat = activeCat;
   if(!cat || !IMAGES[cat]){
@@ -531,14 +533,12 @@ function render(){
 
   for(const f of files){
     const pathKey = `${cat}/${f}`;
-    const src = `${cat}/${encodeURIComponent(f)}`; // ✅ IMPORTANT: évite écran blanc
+    const src = `${cat}/${encodeURIComponent(f)}`;
 
-    // ✅ Nom affiché = mapping si dispo, sinon fallback auto (sans "-")
     const label = (DISPLAY_NAMES[pathKey] ?? f)
       .replace(/\.(png|jpg|jpeg|webp)$/i, "")
       .replace(/-/g, " ");
 
-    // Tailles depuis Excel si dispo, sinon fallback
     let options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
       ? SIZES_BY_PATH[pathKey]
       : getSizeOptions(cat, f);
@@ -546,7 +546,6 @@ function render(){
     const defaultSize = options[0] || "";
     let currentSize = getStoredSize(pathKey, defaultSize);
 
-    // Si localStorage contient une taille invalide, on corrige
     if(currentSize && !options.includes(currentSize)){
       currentSize = defaultSize;
       setStoredSize(pathKey, currentSize);
@@ -592,7 +591,6 @@ function render(){
   html += `</div>`;
   app.innerHTML = html;
 
-  // Bind change events for size selects
   document.querySelectorAll('select[data-path]').forEach(sel => {
     sel.addEventListener("change", () => {
       const pathKey = sel.dataset.path;
@@ -614,7 +612,6 @@ function render(){
   syncCategoryUI();
   render();
 
-  // Auto-fit au resize
   window.addEventListener("resize", () => {
     fitCategoryButtons();
   });
