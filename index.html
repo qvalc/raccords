@@ -87,7 +87,7 @@
     }
     .price .eur{font-size:12px; color:#555}
 
-    /* ✅ HEADER: logo + boutons dessous */
+    /* ✅ HEADER: logo + catégories dessous */
     header.top{
       display:flex;
       flex-direction:column;
@@ -96,29 +96,38 @@
       margin-bottom:0; /* on gère l'espace via #app */
     }
 
-    /* ✅ AJOUT : petit espace propre avant les raccords */
+    /* ✅ petit espace propre avant les raccords */
     #app{
       margin-top:12px;
     }
 
-    /* ✅ Boutons: plus petits + plus serrés + sans scrollbar visible */
+    /* ✅ Variables pilotées par JS (auto-fit) */
+    :root{
+      --cat-font: 12px;
+      --cat-py: 6px;
+      --cat-px: 10px;
+      --cat-gap: 6px;
+    }
+
+    /* ✅ Boutons (desktop/tablette) */
     .catButtons{
       display:flex;
-      gap:6px;                 /* ⬅️ moins d’espace entre boutons */
-      flex-wrap:nowrap;        /* une seule ligne */
-      overflow:hidden;         /* ⬅️ pas de scrollbar */
+      gap: var(--cat-gap);
+      flex-wrap:nowrap;      /* une seule ligne */
+      overflow:hidden;       /* sera forcé à auto si besoin par JS */
       margin:0;
       padding:0;
       max-width:100%;
+      width:100%;
     }
 
     .catBtn{
-      padding:6px 10px;        /* ⬅️ plus petit */
+      padding: var(--cat-py) var(--cat-px);
       border:1px solid #ccc;
       border-radius:999px;
       background:#fff;
       cursor:pointer;
-      font-size:12px;          /* ⬅️ plus petit */
+      font-size: var(--cat-font);
       white-space:nowrap;
       flex:0 0 auto;
     }
@@ -127,11 +136,22 @@
       font-weight:700;
     }
 
+    /* ✅ Select mobile (menu déroulant) */
+    .catSelect{
+      display:none;
+      width:100%;
+      max-width:360px;
+      padding:10px 12px;
+      border:1px solid #ccc;
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+    }
+
     @media (max-width: 700px){
       .logo{height:70px;}
-      /* encore un peu plus petit en mobile */
-      .catBtn{padding:5px 8px; font-size:11px;}
-      .catButtons{gap:5px;}
+      .catButtons{display:none;}
+      .catSelect{display:block;}
     }
   </style>
 </head>
@@ -139,7 +159,12 @@
 
 <header class="top">
   <img src="logo-site.png" alt="Raccords plomberie" class="logo">
+
+  <!-- Desktop/tablette -->
   <div id="catButtons" class="catButtons"></div>
+
+  <!-- Mobile -->
+  <select id="catSelect" class="catSelect" aria-label="Choisir une catégorie"></select>
 </header>
 
 <div id="app"></div>
@@ -246,6 +271,7 @@ let SIZES_BY_PATH = Object.create(null);
 // UI
 const app = document.getElementById("app");
 const catButtons = document.getElementById("catButtons");
+const catSelect = document.getElementById("catSelect");
 
 /** Ordre + libellés demandés */
 const CATEGORY_UI = [
@@ -280,10 +306,79 @@ function buildCatButtons(){
   catButtons.querySelectorAll("button[data-cat]").forEach(btn => {
     btn.addEventListener("click", () => {
       activeCat = btn.dataset.cat;
-      buildCatButtons();
+      syncCategoryUI();
       render();
     });
   });
+}
+
+function buildCatSelect(){
+  catSelect.innerHTML = categories
+    .map(c => `<option value="${c.id}">${c.label}</option>`)
+    .join("");
+
+  catSelect.addEventListener("change", () => {
+    activeCat = catSelect.value;
+    syncCategoryUI();
+    render();
+  });
+}
+
+function syncCategoryUI(){
+  // sync select
+  if(catSelect) catSelect.value = activeCat;
+
+  // sync boutons (classe active)
+  document.querySelectorAll("#catButtons .catBtn").forEach(b => {
+    b.classList.toggle("active", b.dataset.cat === activeCat);
+  });
+
+  // ajuste les boutons à la largeur disponible
+  fitCategoryButtons();
+}
+
+/**
+ * Auto-fit: réduit font/padding/gap jusqu'à ce que la ligne tienne.
+ * Si même le plus petit ne tient pas, on autorise un scroll horizontal.
+ */
+function fitCategoryButtons(){
+  if(!catButtons) return;
+
+  // Si boutons cachés (mobile), inutile
+  if(getComputedStyle(catButtons).display === "none") return;
+
+  const root = document.documentElement;
+
+  const presets = [
+    { font: 12, py: 6, px: 10, gap: 6 },
+    { font: 11, py: 5, px: 9,  gap: 6 },
+    { font: 10, py: 5, px: 8,  gap: 5 },
+    { font: 9,  py: 4, px: 7,  gap: 5 }
+  ];
+
+  const apply = (p) => {
+    root.style.setProperty("--cat-font", p.font + "px");
+    root.style.setProperty("--cat-py", p.py + "px");
+    root.style.setProperty("--cat-px", p.px + "px");
+    root.style.setProperty("--cat-gap", p.gap + "px");
+  };
+
+  const fits = () => catButtons.scrollWidth <= catButtons.clientWidth + 1;
+
+  // par défaut: pas de scroll
+  catButtons.style.overflowX = "hidden";
+
+  apply(presets[0]);
+  if(fits()) return;
+
+  for(let i=1; i<presets.length; i++){
+    apply(presets[i]);
+    if(fits()) return;
+  }
+
+  // dernier recours: scroll horizontal
+  catButtons.style.overflowX = "auto";
+  catButtons.style.webkitOverflowScrolling = "touch";
 }
 
 function normalizeSize(s){
@@ -399,7 +494,7 @@ function setStoredSize(key, val){
 }
 
 function render(){
-  const query = ""; // ✅ recherche supprimée
+  const query = ""; // recherche supprimée
 
   const cat = activeCat;
   if(!cat || !IMAGES[cat]){
@@ -420,7 +515,7 @@ function render(){
     const label = f.replace(/\.(png|jpg|jpeg|webp)$/i, "");
     const pathKey = `${cat}/${f}`;
 
-    // ✅ Tailles depuis Excel si dispo, sinon fallback propre
+    // Tailles depuis Excel si dispo, sinon fallback
     let options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
       ? SIZES_BY_PATH[pathKey]
       : getSizeOptions(cat, f);
@@ -428,7 +523,7 @@ function render(){
     const defaultSize = options[0] || "";
     let currentSize = getStoredSize(pathKey, defaultSize);
 
-    // ✅ Si localStorage contient une taille invalide, on corrige
+    // Si localStorage contient une taille invalide, on corrige
     if(currentSize && !options.includes(currentSize)){
       currentSize = defaultSize;
       setStoredSize(pathKey, currentSize);
@@ -473,7 +568,6 @@ function render(){
   }
 
   html += `</div>`;
-
   app.innerHTML = html;
 
   // Bind change events for size selects
@@ -494,7 +588,14 @@ function render(){
 (async function init(){
   await loadPricesFromFolder();
   buildCatButtons();
+  buildCatSelect();
+  syncCategoryUI();
   render();
+
+  // Auto-fit au resize
+  window.addEventListener("resize", () => {
+    fitCategoryButtons();
+  });
 })();
 </script>
 
