@@ -8,7 +8,6 @@
     body{font-family:Arial, sans-serif; margin:20px; line-height:1.4}
 
     .logo{height:90px; width:auto; flex-shrink:0;}
-    input[type="search"]{padding:10px 12px; border:1px solid #ccc; border-radius:10px; min-width:260px}
 
     /* ✅ GRILLE + COMPACT */
     .grid{
@@ -88,38 +87,51 @@
     }
     .price .eur{font-size:12px; color:#555}
 
-    .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border:1px solid #e1e1e1; border-radius:999px; font-size:13px; background:#fff}
-    .dot{width:8px; height:8px; border-radius:999px; background:#bbb}
-    .dot.ok{background:#2e7d32}
-    .dot.bad{background:#c62828}
+    /* ✅ HEADER: logo + boutons dessous */
+    header.top{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:0; /* on gère l'espace via #app */
+    }
 
-    /* ✅ NOUVEAU HEADER */
-    .top{display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; margin-bottom:18px}
-    .headText{flex:1; min-width:260px}
-    .title{margin:6px 0 10px; font-size:28px}
+    /* ✅ AJOUT : petit espace propre avant les raccords */
+    #app{
+      margin-top:12px;
+    }
+
+    /* ✅ Boutons: plus petits + plus serrés + sans scrollbar visible */
     .catButtons{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:8px 0 12px;
+      gap:6px;                 /* ⬅️ moins d’espace entre boutons */
+      flex-wrap:nowrap;        /* une seule ligne */
+      overflow:hidden;         /* ⬅️ pas de scrollbar */
+      margin:0;
+      padding:0;
+      max-width:100%;
     }
+
     .catBtn{
-      padding:10px 14px;
+      padding:6px 10px;        /* ⬅️ plus petit */
       border:1px solid #ccc;
       border-radius:999px;
       background:#fff;
       cursor:pointer;
-      font-size:14px;
+      font-size:12px;          /* ⬅️ plus petit */
+      white-space:nowrap;
+      flex:0 0 auto;
     }
     .catBtn.active{
       border-color:#111;
       font-weight:700;
     }
-    .tools{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 
     @media (max-width: 700px){
       .logo{height:70px;}
-      .title{font-size:24px}
+      /* encore un peu plus petit en mobile */
+      .catBtn{padding:5px 8px; font-size:11px;}
+      .catButtons{gap:5px;}
     }
   </style>
 </head>
@@ -127,22 +139,7 @@
 
 <header class="top">
   <img src="logo-site.png" alt="Raccords plomberie" class="logo">
-
-  <div class="headText">
-    <h1 class="title">Raccords plomberie</h1>
-
-    <div id="catButtons" class="catButtons"></div>
-
-    <div class="tools">
-      <input id="q" type="search" placeholder="Rechercher (ex: coude, té, 16, 20…)" />
-      <span class="muted" id="count"></span>
-
-      <span class="pill" title="Lecture des fichiers XLSX dans le dossier prix/">
-        <span id="priceDot" class="dot"></span>
-        <span id="priceStatus">Prix : en attente…</span>
-      </span>
-    </div>
-  </div>
+  <div id="catButtons" class="catButtons"></div>
 </header>
 
 <div id="app"></div>
@@ -248,17 +245,13 @@ let SIZES_BY_PATH = Object.create(null);
 
 // UI
 const app = document.getElementById("app");
-const q = document.getElementById("q");
-const count = document.getElementById("count");
-const priceStatus = document.getElementById("priceStatus");
-const priceDot = document.getElementById("priceDot");
 const catButtons = document.getElementById("catButtons");
 
 /** Ordre + libellés demandés */
 const CATEGORY_UI = [
   { id: "laiton", label: "Raccords Laiton" },
   { id: "bicones", label: "Raccords Bicône" },
-  { id: "pex", label: "Raccords  Alpex" },
+  { id: "pex", label: "Raccords Alpex" },
   { id: "pex-a-sertir", label: "Raccords Alpex à sertir" },
   { id: "push", label: "Raccords Push" },
   { id: "collecteurs", label: "Collecteurs" },
@@ -291,11 +284,6 @@ function buildCatButtons(){
       render();
     });
   });
-}
-
-function setPriceIndicator(ok, text){
-  priceStatus.textContent = text;
-  priceDot.className = "dot" + (ok ? " ok" : " bad");
 }
 
 function normalizeSize(s){
@@ -369,17 +357,9 @@ function buildSizesByPath(priceMap){
 }
 
 async function loadPricesFromFolder(){
-  // ✅ Ne jamais “tout casser” si un fichier est en erreur
-  let okFiles = 0;
-  let errFiles = 0;
-
   try{
-    setPriceIndicator(false, "Prix : chargement (dossier prix/)…");
-
     const files = await fetchJson(PRICE_MANIFEST_URL);
-    if(!Array.isArray(files) || files.length === 0){
-      throw new Error("manifest vide ou invalide");
-    }
+    if(!Array.isArray(files) || files.length === 0) throw new Error("manifest vide ou invalide");
 
     const merged = Object.create(null);
 
@@ -388,9 +368,7 @@ async function loadPricesFromFolder(){
       try{
         const { map } = await fetchXlsxAsPriceMap(url);
         for(const k of Object.keys(map)) merged[k] = map[k];
-        okFiles++;
       }catch(e){
-        errFiles++;
         console.warn("Fichier prix ignoré:", url, e);
       }
     }
@@ -398,17 +376,9 @@ async function loadPricesFromFolder(){
     PRICE_MAP = merged;
     SIZES_BY_PATH = buildSizesByPath(PRICE_MAP);
 
-    const n = Object.keys(PRICE_MAP).length;
-    if(n > 0){
-      setPriceIndicator(true, `Prix : ${n} valeur(s) chargée(s) (${okFiles} ok${errFiles ? `, ${errFiles} en erreur` : ""})`);
-    }else{
-      setPriceIndicator(false, `Prix : 0 valeur chargée (${okFiles} ok${errFiles ? `, ${errFiles} en erreur` : ""})`);
-    }
-
   }catch(e){
     PRICE_MAP = Object.create(null);
     SIZES_BY_PATH = Object.create(null);
-    setPriceIndicator(false, "Prix : dossier prix/ introuvable ou manifest/xlsx invalide");
     console.error(e);
   }
 }
@@ -429,21 +399,17 @@ function setStoredSize(key, val){
 }
 
 function render(){
-  const query = q.value.trim().toLowerCase();
+  const query = ""; // ✅ recherche supprimée
 
   const cat = activeCat;
   if(!cat || !IMAGES[cat]){
     app.innerHTML = `<p class="muted">Aucune catégorie à afficher.</p>`;
-    count.textContent = "";
     return;
   }
 
   const files = (IMAGES[cat] || []).filter(f => f.toLowerCase().includes(query));
-  const total = files.length;
-
   if(!files.length){
     app.innerHTML = `<p class="muted">Aucune image à afficher.</p>`;
-    count.textContent = "";
     return;
   }
 
@@ -509,7 +475,6 @@ function render(){
   html += `</div>`;
 
   app.innerHTML = html;
-  count.textContent = total ? `${total} image(s)` : "";
 
   // Bind change events for size selects
   document.querySelectorAll('select[data-path]').forEach(sel => {
@@ -525,8 +490,6 @@ function render(){
     });
   });
 }
-
-q.addEventListener("input", render);
 
 (async function init(){
   await loadPricesFromFolder();
