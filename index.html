@@ -48,8 +48,15 @@
       border-radius:10px;
     }
 
-    /* ✅ TEXTE + COMPACT */
-    figcaption{font-size:12px; margin-top:6px; word-break:break-word}
+    /* ✅ TEXTE + COMPACT (centré + gras) */
+    figcaption{
+      font-size:12px;
+      margin-top:6px;
+      word-break:break-word;
+      text-align:center;
+      font-weight:600;
+    }
+
     .muted{color:#666; font-size:13px}
     .missing{font-size:12px; color:#c00; margin-top:8px}
 
@@ -77,7 +84,11 @@
       margin-top:auto;
       padding-top:8px;
     }
-    .price label{font-size:12px; color:#333}
+    .price label{
+      font-size:11px;
+      color:#333;
+      white-space:nowrap; /* TVA € sur une seule ligne */
+    }
     .price input{
       width:90px;
       padding:6px 8px;
@@ -85,7 +96,6 @@
       border-radius:10px;
       font-size:12px;
     }
-    .price .eur{font-size:12px; color:#555}
 
     /* ✅ HEADER: logo + catégories dessous */
     header.top{
@@ -93,7 +103,7 @@
       flex-direction:column;
       align-items:flex-start;
       gap:10px;
-      margin-bottom:0; /* on gère l'espace via #app */
+      margin-bottom:0;
     }
 
     /* ✅ petit espace propre avant les raccords */
@@ -113,8 +123,8 @@
     .catButtons{
       display:flex;
       gap: var(--cat-gap);
-      flex-wrap:nowrap;      /* une seule ligne */
-      overflow:hidden;       /* sera forcé à auto si besoin par JS */
+      flex-wrap:nowrap;
+      overflow:hidden;
       margin:0;
       padding:0;
       max-width:100%;
@@ -220,6 +230,15 @@ const IMAGES = {
     "jonction-reduite.png","manchon.png","rac-femelle-el.png","rac-male.png","te-egal.png","te-femelle.png","te-male.png",
     "te-reduit.png","vanne-ecrou-libre.png"
   ]
+};
+
+/** ✅ NOMS D’AFFICHAGE PERSONNALISÉS (OPTIONNELS) */
+const DISPLAY_NAMES = {
+  "laiton/laiton-bonnet.png":  "bonnet",
+  "laiton/laiton-culasse.png": "culasse",
+  "laiton/laiton-manchon.png": "manchon",
+  "laiton/tes-1.png":          "Te ecrou libre",
+  "laiton/tes-2.png":          "Te ecrou libre 45°",
 };
 
 /** Options taille (fallback uniquement si pas de tailles dans l’Excel) */
@@ -511,9 +530,13 @@ function render(){
   let html = `<div class="grid">`;
 
   for(const f of files){
-    const src = `${cat}/${encodeURIComponent(f)}`;
-    const label = f.replace(/\.(png|jpg|jpeg|webp)$/i, "");
     const pathKey = `${cat}/${f}`;
+    const src = `${cat}/${encodeURIComponent(f)}`; // ✅ IMPORTANT: évite écran blanc
+
+    // ✅ Nom affiché = mapping si dispo, sinon fallback auto (sans "-")
+    const label = (DISPLAY_NAMES[pathKey] ?? f)
+      .replace(/\.(png|jpg|jpeg|webp)$/i, "")
+      .replace(/-/g, " ");
 
     // Tailles depuis Excel si dispo, sinon fallback
     let options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
@@ -551,7 +574,7 @@ function render(){
         </div>
 
         <div class="price">
-          <label for="${priceId}">Prix TVAC</label>
+          <label for="${priceId}">Tvac €</label>
           <input
             id="${priceId}"
             type="text"
@@ -561,7 +584,6 @@ function render(){
             readonly
             title="Prix chargé depuis les fichiers du dossier prix/ (modifiable via Excel)"
           />
-          <span class="eur">€</span>
         </div>
       </figure>
     `;
