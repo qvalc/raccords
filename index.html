@@ -125,23 +125,28 @@
     }
 
     .price {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
       margin-top: auto;
-      padding-top: 4px;
-      padding-bottom: 4px;
-      /* petit espace visuel */
+      padding: 6px 0;
+      display: flex;
+      justify-content: center;
     }
 
+    .price-big {
+      display: flex;
+      align-items: flex-start;
+      gap: 2px;
+      font-weight: 800;
+      color: #222;
+    }
 
-    .price label {
-      font-size: 11px;
-      color: #333;
-      white-space: nowrap;
-      font-weight: 700;
-      /* € en gras */
+    .price-big .amount {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .price-big .currency {
+      font-size: 14px;
+      margin-top: 4px;
     }
 
     .price input {
