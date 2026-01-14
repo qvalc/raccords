@@ -481,6 +481,23 @@
       return (v > 0) ? "✅ En stock" : "⚠️ Rupture";
     }
 
+    function pickInitialSize(pathKey, options) {
+      // 1) Respecte la taille déjà choisie par l'utilisateur (localStorage)
+      const stored = getStoredSize(pathKey, "");
+      if (stored && options.includes(stored)) return stored;
+
+      // 2) Sinon: prend la 1ère taille EN STOCK
+      for (const opt of options) {
+        const k = getKey(pathKey, opt);
+        const v = Number(STOCK_MAP[k]);
+        if (v > 0) return opt;
+      }
+
+      // 3) Sinon: tout est en rupture (ou pas de stock renseigné) -> fallback 1ère option
+      return options[0] || "";
+    }
+
+
     async function fetchJson(url) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
@@ -645,13 +662,15 @@
           ? SIZES_BY_PATH[pathKey]
           : getSizeOptions(cat, f);
 
-        const defaultSize = options[0] || "";
-        let currentSize = getStoredSize(pathKey, defaultSize);
+        let currentSize = pickInitialSize(pathKey, options);
 
+        // sécurité si l'Excel a changé
         if (currentSize && !options.includes(currentSize)) {
-          currentSize = defaultSize;
-          setStoredSize(pathKey, currentSize);
+          currentSize = options[0] || "";
         }
+
+        setStoredSize(pathKey, currentSize);
+
 
         const k = getKey(pathKey, currentSize);
         const price = PRICE_MAP[k];

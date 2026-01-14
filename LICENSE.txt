@@ -1,0 +1,13 @@
+© 2026 Sébastien Nicolas
+
+Tous droits réservés.
+
+Ce dépôt, son contenu (code source, structure, textes, images, données, fichiers)
+et toute œuvre associée sont la propriété exclusive de Sébastien Nicolas.
+
+Toute reproduction, représentation, modification, adaptation, distribution ou
+exploitation, totale ou partielle, à des fins commerciales ou non, est strictement
+interdite sans autorisation écrite préalable de l’auteur.
+
+La consultation du code via GitHub ou un navigateur web n’implique aucun droit
+d’utilisation, de réutilisation ou d’appropriation.
