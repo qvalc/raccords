@@ -468,9 +468,17 @@ function buildSizesByPath(priceMap){
     (idx[pathKey] ||= []).push(taille);
   }
 
-  for(const p of Object.keys(idx)){
-    idx[p] = Array.from(new Set(idx[p])).sort();
-  }
+  const collator = new Intl.Collator("fr", { numeric: true, sensitivity: "base" });
+
+for (const p of Object.keys(idx)) {
+  const unique = Array.from(new Set(idx[p]));
+
+  const allNumeric = unique.every(v => /^\d+(?:[.,]\d+)?$/.test(String(v).trim()));
+
+  idx[p] = allNumeric
+    ? unique.sort((a, b) => Number(String(a).replace(",", ".")) - Number(String(b).replace(",", ".")))
+    : unique.sort((a, b) => collator.compare(String(a), String(b)));
+}
 
   return idx;
 }
