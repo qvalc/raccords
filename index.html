@@ -482,9 +482,13 @@
     }
 
     function pickInitialSize(pathKey, options) {
-      // 1) Respecte la taille déjà choisie par l'utilisateur (localStorage)
+      // 1) Respecte la taille déjà choisie, MAIS seulement si elle est en stock
       const stored = getStoredSize(pathKey, "");
-      if (stored && options.includes(stored)) return stored;
+      if (stored && options.includes(stored)) {
+        const ks = getKey(pathKey, stored);
+        const vs = Number(STOCK_MAP[ks]);
+        if (vs > 0) return stored; // ok, on garde le choix utilisateur
+      }
 
       // 2) Sinon: prend la 1ère taille EN STOCK
       for (const opt of options) {
@@ -493,9 +497,10 @@
         if (v > 0) return opt;
       }
 
-      // 3) Sinon: tout est en rupture (ou pas de stock renseigné) -> fallback 1ère option
+      // 3) Sinon: tout est en rupture -> fallback 1ère option
       return options[0] || "";
     }
+
 
 
     async function fetchJson(url) {
