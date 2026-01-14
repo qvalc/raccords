@@ -65,23 +65,26 @@
       font-size: 12px;
       font-weight: 600;
       text-align: center;
-
-      /* fond + largeur */
       background: #f2f2f2;
       width: 100%;
 
-      /* intégration dans la carte */
       padding: 6px 6px;
       margin: 0 0 6px 0;
 
-      /* gestion des titres longs */
       word-break: break-word;
       overflow-wrap: anywhere;
-
-      /* coins alignés avec la carte */
       border-radius: 8px;
-    }
 
+      /* === ALIGNEMENT DES CARTES === */
+      height: 42px;
+      /* hauteur fixe pour tous les titres */
+      display: flex;
+      align-items: center;
+      /* centre verticalement */
+      justify-content: center;
+      /* centre horizontalement */
+      line-height: 1.2;
+    }
 
     .muted {
       color: #666;
