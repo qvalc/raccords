@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Raccords plomberie — Galerie</title>
   <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -57,11 +63,25 @@
 
     figcaption {
       font-size: 12px;
-      margin-bottom: 6px;
-      word-break: break-word;
-      text-align: center;
       font-weight: 600;
+      text-align: center;
+
+      /* fond + largeur */
+      background: #f2f2f2;
+      width: 100%;
+
+      /* intégration dans la carte */
+      padding: 6px 6px;
+      margin: 0 0 6px 0;
+
+      /* gestion des titres longs */
+      word-break: break-word;
+      overflow-wrap: anywhere;
+
+      /* coins alignés avec la carte */
+      border-radius: 8px;
     }
+
 
     .muted {
       color: #666;
