@@ -1,690 +1,717 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Raccords plomberie — Galerie</title>
   <style>
-    body{font-family:Arial, sans-serif; margin:20px; line-height:1.4}
-
-    .logo{height:90px; width:auto; flex-shrink:0;}
-
-    /* ✅ GRILLE + COMPACT */
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-      gap:10px;
-      align-items:stretch;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.4
     }
 
-    /* ✅ CARTE + COMPACT */
-    figure{
-      margin:0;
-      border:1px solid #e1e1e1;
-      border-radius:10px;
-      padding:8px;
-      background:#fff;
-      display:flex;
-      flex-direction:column;
-      height:100%;
+    .logo {
+      height: 90px;
+      width: auto;
+      flex-shrink: 0;
     }
 
-    /* ✅ IMAGE + COMPACT */
-    .thumb{
-      height:90px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      border-radius:10px;
-      background:#fff;
-    }
-    .thumb img{
-      max-width:100%;
-      max-height:100%;
-      width:auto;
-      height:auto;
-      display:block;
-      border-radius:10px;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      align-items: stretch;
     }
 
-    /* ✅ TEXTE + COMPACT (centré + gras) */
-    figcaption{
-      font-size:12px;
-      margin-top:6px;
-      word-break:break-word;
-      text-align:center;
-      font-weight:600;
+    figure {
+      margin: 0;
+      border: 1px solid #e1e1e1;
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
-    .muted{color:#666; font-size:13px}
-    .missing{font-size:12px; color:#c00; margin-top:8px}
-
-    /* ✅ Stock (badge texte discret) */
-    .stock{
-      margin-top:6px;
-      font-size:12px;
-      font-weight:700;
-      text-align:center;
+    .thumb {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
     }
 
-    /* bloc taille au-dessus du prix */
-    .size{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      margin-top:8px;
-    }
-    .size label{font-size:12px; color:#333}
-    .size select{
-      width:100%;
-      padding:6px 8px;
-      border:1px solid #ccc;
-      border-radius:10px;
-      font-size:12px;
+    .thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      display: block;
+      border-radius: 10px;
     }
 
-    /* prix aligné en bas */
-    .price{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      margin-top:auto;
-      padding-top:8px;
-    }
-    .price label{
-      font-size:11px;
-      color:#333;
-      white-space:nowrap; /* TVA € sur une seule ligne */
-    }
-    .price input{
-      width:90px;
-      padding:6px 8px;
-      border:1px solid #ccc;
-      border-radius:10px;
-      font-size:12px;
+    figcaption {
+      font-size: 12px;
+      margin-bottom: 6px;
+      word-break: break-word;
+      text-align: center;
+      font-weight: 600;
     }
 
-    /* ✅ HEADER: logo + catégories dessous */
-    header.top{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap:10px;
-      margin-bottom:0;
+    .muted {
+      color: #666;
+      font-size: 13px
     }
 
-    /* ✅ petit espace propre avant les raccords */
-    #app{
-      margin-top:12px;
+    .missing {
+      font-size: 12px;
+      color: #c00;
+      margin-top: 8px
     }
 
-    /* ✅ Variables pilotées par JS (auto-fit) */
-    :root{
+    .stock {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .size {
+      display: flex;
+      align-items: center;
+      margin-top: 4px;
+      /* espace réduit */
+    }
+
+    .size label {
+      font-size: 12px;
+      color: #333
+    }
+
+    .size select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    .price {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      /* petit espace visuel */
+    }
+
+
+    .price label {
+      font-size: 11px;
+      color: #333;
+      white-space: nowrap;
+      font-weight: 700;
+      /* € en gras */
+    }
+
+    .price input {
+      width: 4.5em;
+      text-align: center;
+      padding: 6px 6px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    header.top {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 0;
+    }
+
+    #app {
+      margin-top: 12px;
+    }
+
+    :root {
       --cat-font: 12px;
       --cat-py: 6px;
       --cat-px: 10px;
       --cat-gap: 6px;
     }
 
-    /* ✅ Boutons (desktop/tablette) */
-    .catButtons{
-      display:flex;
+    .catButtons {
+      display: flex;
       gap: var(--cat-gap);
-      flex-wrap:nowrap;
-      overflow:hidden;
-      margin:0;
-      padding:0;
-      max-width:100%;
-      width:100%;
+      flex-wrap: nowrap;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      max-width: 100%;
+      width: 100%;
     }
 
-    .catBtn{
+    .catBtn {
       padding: var(--cat-py) var(--cat-px);
-      border:1px solid #ccc;
-      border-radius:999px;
-      background:#fff;
-      cursor:pointer;
+      border: 1px solid #ccc;
+      border-radius: 999px;
+      background: #fff;
+      cursor: pointer;
       font-size: var(--cat-font);
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
-    .catBtn.active{
-      border-color:#111;
-      font-weight:700;
+      white-space: nowrap;
+      flex: 0 0 auto;
     }
 
-    /* ✅ Select mobile (menu déroulant) */
-    .catSelect{
-      display:none;
-      width:100%;
-      max-width:360px;
-      padding:10px 12px;
-      border:1px solid #ccc;
-      border-radius:10px;
-      font-size:14px;
-      background:#fff;
+    .catBtn.active {
+      border-color: #111;
+      font-weight: 700;
     }
 
-    @media (max-width: 700px){
-      .logo{height:70px;}
-      .catButtons{display:none;}
-      .catSelect{display:block;}
+    .catSelect {
+      display: none;
+      width: 100%;
+      max-width: 360px;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    @media (max-width: 700px) {
+      .logo {
+        height: 70px;
+      }
+
+      .catButtons {
+        display: none;
+      }
+
+      .catSelect {
+        display: block;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<header class="top">
-  <img src="logo-site.png" alt="Raccords plomberie" class="logo">
+  <header class="top">
+    <img src="logo-site.png" alt="Raccords plomberie" class="logo">
 
-  <!-- Desktop/tablette -->
-  <div id="catButtons" class="catButtons"></div>
+    <!-- Desktop/tablette -->
+    <div id="catButtons" class="catButtons"></div>
 
-  <!-- Mobile -->
-  <select id="catSelect" class="catSelect" aria-label="Choisir une catégorie"></select>
-</header>
+    <!-- Mobile -->
+    <select id="catSelect" class="catSelect" aria-label="Choisir une catégorie"></select>
+  </header>
 
-<div id="app"></div>
+  <div id="app"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-<script>
-const HIDE_A_SOUDER = true; // true = masqué, false = visible
+  <script>
+    const HIDE_A_SOUDER = true; // true = masqué, false = visible
 
-/** Images */
-const IMAGES = {
-  "a-souder": [
-    "coude-femelle.png","coude-male.png","coude-union-femelle.png","coude-union-male.png",
-    "rac-femelle.png","rac-male.png","union-femelle.png","union-male.png"
-  ],
+    /** Images */
+    const IMAGES = {
+      "a-souder": [
+        "coude-femelle.png", "coude-male.png", "coude-union-femelle.png", "coude-union-male.png",
+        "rac-femelle.png", "rac-male.png", "union-femelle.png", "union-male.png"
+      ],
 
-  "acc-tube-polyethylene/huot": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
-  "acc-tube-polyethylene/plasson": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
-  "acc-tube-polyethylene/rexuo": ["coude.png","manchon.png","rac-femelle.png","rac-male.png","te.png"],
+      "acc-tube-polyethylene/huot": ["coude.png", "manchon.png", "rac-femelle.png", "rac-male.png", "te.png"],
+      "acc-tube-polyethylene/plasson": ["coude.png", "manchon.png", "rac-femelle.png", "rac-male.png", "te.png"],
+      "acc-tube-polyethylene/rexuo": ["coude.png", "manchon.png", "rac-femelle.png", "rac-male.png", "te.png"],
 
-  "bicones": ["coude-femelle.png","coude-ff.png","coude-male.png","manchon-reduit.png","manchon.png","rac-femelle.png","rac-male.png","te-egal.png"],
+      "bicones": ["coude-femelle.png", "coude-ff.png", "coude-male.png", "manchon-reduit.png", "manchon.png", "rac-femelle.png", "rac-male.png", "te-egal.png"],
 
-  "laiton": [
-    "allonge.png","bouchon.png","coude-f-f.png","coude-m-f.png","coude-union.png",
-    "laiton-bonnet.png","laiton-culasse.png","laiton-manchon.png","nipple-reduite.png","nipple.png",
-    "rac-union.png","reduction-f-f.png","reduction-f-m.png","te-egal.png","tes-1.png","tes-2.png",
-    "tetine-femelle.png","tetine-male.png"
-  ],
+      "laiton": [
+        "allonge.png", "bouchon.png", "coude-f-f.png", "coude-m-f.png", "coude-union.png",
+        "laiton-bonnet.png", "laiton-culasse.png", "laiton-manchon.png", "nipple-reduite.png", "nipple.png",
+        "rac-union.png", "reduction-f-f.png", "reduction-f-m.png", "te-egal.png", "tes-1.png", "tes-2.png",
+        "tetine-femelle.png", "tetine-male.png"
+      ],
 
-  "collecteurs": [
-    "collecteur-2-bleu.png","collecteur-2-rouge.png",
-    "collecteur-3-bleu.png","collecteur-3-rouge.png",
-    "collecteur-4-bleu.png","collecteur-4-rouge.png",
-    "collecteur-5-bleu.png","collecteur-5-rouge.png",
-    "collecteur-6-bleu.png","collecteur-6-rouge.png"
-  ],
+      "collecteurs": [
+        "collecteur-2-bleu.png", "collecteur-2-rouge.png",
+        "collecteur-3-bleu.png", "collecteur-3-rouge.png",
+        "collecteur-4-bleu.png", "collecteur-4-rouge.png",
+        "collecteur-5-bleu.png", "collecteur-5-rouge.png",
+        "collecteur-6-bleu.png", "collecteur-6-rouge.png"
+      ],
 
-  "geka": ["rac-geka-F.png","rac-geka-M.png","rac-geka-T.png"],
+      "geka": ["rac-geka-F.png", "rac-geka-M.png", "rac-geka-T.png"],
 
-  "pex-a-sertir": [
-    "bouchon.png","coude-egal.png","coude-femelle-el.png","coude-femelle.png","coude-male.png",
-    "culasse-double.png","culasse-simple.png","manchon.png","rac-femelle-el.png","raccord-femelle.png","raccord-male.png",
-    "te-egal.png","te-femelle.png","te-male.png","te-reduit.png"
-  ],
+      "pex-a-sertir": [
+        "bouchon.png", "coude-egal.png", "coude-femelle-el.png", "coude-femelle.png", "coude-male.png",
+        "culasse-double.png", "culasse-simple.png", "manchon.png", "rac-femelle-el.png", "raccord-femelle.png", "raccord-male.png",
+        "te-egal.png", "te-femelle.png", "te-male.png", "te-reduit.png"
+      ],
 
-  "pex": [
-    "bouchon.png","coude-f-el.png","coude-femelle.png","coude-male.png","culasse-doucle.png","culasse-simple.png","manchon.png",
-    "raccord-f-el.png","raccord-femelle.png","raccord-male.png","te-femelle.png","te-male.png","te-reduit.png","te.png","vanne.png"
-  ],
+      "pex": [
+        "bouchon.png", "coude-f-el.png", "coude-femelle.png", "coude-male.png", "culasse-doucle.png", "culasse-simple.png", "manchon.png",
+        "raccord-f-el.png", "raccord-femelle.png", "raccord-male.png", "te-femelle.png", "te-male.png", "te-reduit.png", "te.png", "vanne.png"
+      ],
 
-  "push": [
-    "bague-de-montage.png","bouchon.png","coude-egal.png","coude-femelle-el.png","coude-male.png","culasse.png","insert.png",
-    "jonction-reduite.png","manchon.png","rac-femelle-el.png","rac-male.png","te-egal.png","te-femelle.png","te-male.png",
-    "te-reduit.png","vanne-ecrou-libre.png"
-  ],
+      "push": [
+        "bague-de-montage.png", "bouchon.png", "coude-egal.png", "coude-femelle-el.png", "coude-male.png", "culasse.png", "insert.png",
+        "jonction-reduite.png", "manchon.png", "rac-femelle-el.png", "rac-male.png", "te-egal.png", "te-femelle.png", "te-male.png",
+        "te-reduit.png", "vanne-ecrou-libre.png"
+      ],
 
-  /* ✅ NOUVEAU : Tube Alpex */
-  "tube-alpex": [
-    "Tube-Alpex.png",
-    "Tube-Alpex-isolé-rouge.png",
-    "Tube-Alpex-isolé-bleu.png",
-    "Tube-Alpex-gaine-rouge.png",
-    "Tube-Alpex-gaine-bleue.png"
-  ]
-};
+      "tube-alpex": [
+        "Tube-Alpex.png",
+        "Tube-Alpex-isolé-rouge.png",
+        "Tube-Alpex-isolé-bleu.png",
+        "Tube-Alpex-gaine-rouge.png",
+        "Tube-Alpex-gaine-bleue.png"
+      ]
+    };
 
-/** ✅ NOMS D’AFFICHAGE PERSONNALISÉS (OPTIONNELS) */
-const DISPLAY_NAMES = {
-  "laiton/laiton-bonnet.png":  "bonnet",
-  "laiton/laiton-culasse.png": "culasse",
-  "laiton/laiton-manchon.png": "manchon",
-  "laiton/tes-1.png":          "Te ecrou libre",
-  "laiton/tes-2.png":          "Te ecrou libre 45°",
+    /** ✅ NOMS D’AFFICHAGE PERSONNALISÉS (OPTIONNELS) */
+    const DISPLAY_NAMES = {
+      "laiton/laiton-bonnet.png": "bonnet",
+      "laiton/laiton-culasse.png": "culasse",
+      "laiton/laiton-manchon.png": "manchon",
+      "laiton/tes-1.png": "Te ecrou libre",
+      "laiton/tes-2.png": "Te ecrou libre 45°",
+      "tube-alpex/Tube-Alpex.png": "Tube Alpex",
+      "tube-alpex/Tube-Alpex-isolé-rouge.png": "Tube Alpex isolé rouge",
+      "tube-alpex/Tube-Alpex-isolé-bleu.png": "Tube Alpex isolé bleu"
+    };
 
-  /* ✅ NOUVEAU : noms Tube Alpex */
-  "tube-alpex/Tube-Alpex.png":             "Tube Alpex",
-  "tube-alpex/Tube-Alpex-isolé-rouge.png": "Tube Alpex isolé rouge",
-  "tube-alpex/Tube-Alpex-isolé-bleu.png":  "Tube Alpex isolé bleu"
-};
+    /** Options taille (fallback uniquement si pas de tailles dans l’Excel) */
+    const CAT_SIZES = {
+      "a-souder": ["3/8", "1/2", "3/4"],
 
-/** Options taille (fallback uniquement si pas de tailles dans l’Excel) */
-const CAT_SIZES = {
-  "a-souder": ["3/8", "1/2", "3/4"],
+      "acc-tube-polyethylene/huot": [
+        "1/2 normal", "1/2 renforcé",
+        "3/4 normal", "3/4 renforcé",
+        "4/4 normal", "4/4 renforcé"
+      ],
 
-  "acc-tube-polyethylene/huot": [
-    "1/2 normal", "1/2 renforcé",
-    "3/4 normal", "3/4 renforcé",
-    "4/4 normal", "4/4 renforcé"
-  ],
+      "acc-tube-polyethylene/plasson": ["Ø25", "Ø32"],
+      "acc-tube-polyethylene/rexuo": ["Ø25", "Ø32"],
 
-  "acc-tube-polyethylene/plasson": ["Ø25", "Ø32"],
-  "acc-tube-polyethylene/rexuo": ["Ø25", "Ø32"],
+      "bicones": ["3/8", "1/2", "3/4", "4/4", "5/4"],
+      "laiton": ["3/8", "1/2", "3/4", "4/4", "5/4"],
 
-  "bicones": ["3/8", "1/2", "3/4", "4/4", "5/4"],
-  "laiton": ["3/8", "1/2", "3/4", "4/4", "5/4"],
+      "collecteurs": [
+        "3/4-2", "3/4-3", "3/4-4", "3/4-5", "3/4-6",
+        "4/4-2", "4/4-5"
+      ],
 
-  "collecteurs": [
-    "3/4-2", "3/4-3", "3/4-4", "3/4-5", "3/4-6",
-    "4/4-2", "4/4-5"
-  ],
+      "geka": ["1/2", "3/4"],
 
-  "geka": ["1/2", "3/4"],
+      "pex-a-sertir": ["Ø16", "Ø20", "Ø26"],
+      "pex": ["Ø16", "Ø20", "Ø26"],
+      "push": ["Ø16", "Ø20"],
 
-  "pex-a-sertir": ["Ø16", "Ø20", "Ø26"],
-  "pex": ["Ø16", "Ø20", "Ø26"],
-  "push": ["Ø16", "Ø20"],
+      /* ✅ NOUVEAU : Tube Alpex (fallback "vide" si pas d'Excel) */
+      "tube-alpex": ["16", "20", "26"]
+    };
 
-  /* ✅ NOUVEAU : Tube Alpex (fallback "vide" si pas d'Excel) */
-  "tube-alpex": ["16", "20", "26"]
-};
+    const MALE_FEM_SIZES = ["1/2", "3/4"];
+    function isMaleFem(file) {
+      const f = file.toLowerCase();
+      return f.includes("male") || f.includes("femelle");
+    }
+    function getSizeOptions(cat, file) {
+      if ((cat === "pex-a-sertir" || cat === "pex" || cat === "push") && isMaleFem(file)) return MALE_FEM_SIZES;
+      return CAT_SIZES[cat] || [""];
+    }
 
-const MALE_FEM_SIZES = ["1/2", "3/4"];
-function isMaleFem(file){
-  const f = file.toLowerCase();
-  return f.includes("male") || f.includes("femelle");
-}
-function getSizeOptions(cat, file){
-  if ((cat === "pex-a-sertir" || cat === "pex" || cat === "push") && isMaleFem(file)) return MALE_FEM_SIZES;
-  return CAT_SIZES[cat] || [""];
-}
+    const PRICE_MANIFEST_URL = "prix/manifest.json";
 
-const PRICE_MANIFEST_URL = "prix/manifest.json";
+    /** Map prix: clé = "path|taille" => prix_tvac */
+    let PRICE_MAP = Object.create(null);
 
-/** Map prix: clé = "path|taille" => prix_tvac */
-let PRICE_MAP = Object.create(null);
+    /** ✅ Map stock: clé = "path|taille" => disponible (nombre)
+        Règle: vide = 0, <= 0 rupture, > 0 en stock
+    */
+    let STOCK_MAP = Object.create(null);
 
-/** ✅ Map stock: clé = "path|taille" => disponible (nombre)
-    Règle: vide = 0, <= 0 rupture, > 0 en stock
-*/
-let STOCK_MAP = Object.create(null);
+    /** Index tailles disponibles par article (dérivé des fichiers prix) */
+    let SIZES_BY_PATH = Object.create(null);
 
-/** Index tailles disponibles par article (dérivé des fichiers prix) */
-let SIZES_BY_PATH = Object.create(null);
+    // UI
+    const app = document.getElementById("app");
+    const catButtons = document.getElementById("catButtons");
+    const catSelect = document.getElementById("catSelect");
 
-// UI
-const app = document.getElementById("app");
-const catButtons = document.getElementById("catButtons");
-const catSelect = document.getElementById("catSelect");
+    /** Ordre + libellés demandés */
+    const CATEGORY_UI = [
+      { id: "laiton", label: "Raccords Laiton" },
+      { id: "bicones", label: "Raccords Bicône" },
+      { id: "push", label: "Raccords Push" },
+      { id: "collecteurs", label: "Collecteurs" },
+      { id: "acc-tube-polyethylene/huot", label: "Raccords Huot" },
+      { id: "acc-tube-polyethylene/rexuo", label: "Raccords Rexuo" },
+      { id: "acc-tube-polyethylene/plasson", label: "Raccords Plasson" },
+      { id: "geka", label: "Raccords Geka" },
+      { id: "pex", label: "Raccords Alpex" },
+      { id: "pex-a-sertir", label: "Raccords Alpex à sertir" },
+      { id: "tube-alpex", label: "Tube Alpex" },
+    ];
 
-/** Ordre + libellés demandés */
-const CATEGORY_UI = [
-  { id: "laiton", label: "Raccords Laiton" },
-  { id: "bicones", label: "Raccords Bicône" },
-  { id: "push", label: "Raccords Push" },
-  { id: "collecteurs", label: "Collecteurs" },
-  { id: "acc-tube-polyethylene/huot", label: "Raccords Huot" },
-  { id: "acc-tube-polyethylene/rexuo", label: "Raccords Rexuo" },
-  { id: "acc-tube-polyethylene/plasson", label: "Raccords Plasson" },
-  { id: "geka", label: "Raccords Geka" },
-  { id: "pex", label: "Raccords Alpex" },
-  { id: "pex-a-sertir", label: "Raccords Alpex à sertir" },
-  { id: "tube-alpex", label: "Tube Alpex" },
-];
+    /** catégories dispo (en respectant HIDE_A_SOUDER) */
+    const allowedCats = new Set(Object.keys(IMAGES).filter(cat => {
+      if (HIDE_A_SOUDER && cat === "a-souder") return false;
+      return true;
+    }));
 
-/** catégories dispo (en respectant HIDE_A_SOUDER) */
-const allowedCats = new Set(Object.keys(IMAGES).filter(cat => {
-  if (HIDE_A_SOUDER && cat === "a-souder") return false;
-  return true;
-}));
+    const categories = CATEGORY_UI.filter(c => allowedCats.has(c.id));
+    let activeCat = categories[0]?.id || "__none__";
 
-const categories = CATEGORY_UI.filter(c => allowedCats.has(c.id));
-let activeCat = categories[0]?.id || "__none__";
-
-function buildCatButtons(){
-  catButtons.innerHTML = categories.map(c => `
-    <button class="catBtn ${c.id===activeCat?'active':''}" data-cat="${c.id}" type="button">
+    function buildCatButtons() {
+      catButtons.innerHTML = categories.map(c => `
+    <button class="catBtn ${c.id === activeCat ? 'active' : ''}" data-cat="${c.id}" type="button">
       ${c.label}
     </button>
   `).join("");
 
-  catButtons.querySelectorAll("button[data-cat]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      activeCat = btn.dataset.cat;
-      syncCategoryUI();
-      render();
-    });
-  });
-}
-
-function buildCatSelect(){
-  catSelect.innerHTML = categories
-    .map(c => `<option value="${c.id}">${c.label}</option>`)
-    .join("");
-
-  catSelect.addEventListener("change", () => {
-    activeCat = catSelect.value;
-    syncCategoryUI();
-    render();
-  });
-}
-
-function syncCategoryUI(){
-  if(catSelect) catSelect.value = activeCat;
-
-  document.querySelectorAll("#catButtons .catBtn").forEach(b => {
-    b.classList.toggle("active", b.dataset.cat === activeCat);
-  });
-
-  fitCategoryButtons();
-}
-
-function fitCategoryButtons(){
-  if(!catButtons) return;
-  if(getComputedStyle(catButtons).display === "none") return;
-
-  const root = document.documentElement;
-
-  const presets = [
-    { font: 12, py: 6, px: 10, gap: 6 },
-    { font: 11, py: 5, px: 9,  gap: 6 },
-    { font: 10, py: 5, px: 8,  gap: 5 },
-    { font: 9,  py: 4, px: 7,  gap: 5 }
-  ];
-
-  const apply = (p) => {
-    root.style.setProperty("--cat-font", p.font + "px");
-    root.style.setProperty("--cat-py", p.py + "px");
-    root.style.setProperty("--cat-px", p.px + "px");
-    root.style.setProperty("--cat-gap", p.gap + "px");
-  };
-
-  const fits = () => catButtons.scrollWidth <= catButtons.clientWidth + 1;
-
-  catButtons.style.overflowX = "hidden";
-
-  apply(presets[0]);
-  if(fits()) return;
-
-  for(let i=1; i<presets.length; i++){
-    apply(presets[i]);
-    if(fits()) return;
-  }
-
-  catButtons.style.overflowX = "auto";
-  catButtons.style.webkitOverflowScrolling = "touch";
-}
-
-function normalizeSize(s){
-  return String(s || "").trim();
-}
-
-function getKey(path, taille){
-  return `${path}|${normalizeSize(taille)}`;
-}
-
-function stockLabelFor(key){
-  // règle: si pas de valeur => 0 => rupture
-  const v = Number(STOCK_MAP[key]);
-  return (v > 0) ? "✅ En stock" : "⚠️ Rupture";
-}
-
-async function fetchJson(url){
-  const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
-  return res.json();
-}
-
-async function fetchXlsxAsPriceMap(xlsxUrl){
-  const res = await fetch(xlsxUrl, { cache: "no-store" });
-  if(!res.ok) throw new Error(`HTTP ${res.status} sur ${xlsxUrl}`);
-
-  const buf = await res.arrayBuffer();
-  const wb = XLSX.read(buf, { type: "array" });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  if(!ws) throw new Error(`Feuille Excel introuvable dans ${xlsxUrl}`);
-
-  const rows = XLSX.utils.sheet_to_json(ws, { defval: "", raw: false });
-
-  const map = Object.create(null);
-  const stock = Object.create(null);
-
-  for(const r of rows){
-    let path = String(r.path || r.Path || r.PATH || "").trim();
-    const taille = normalizeSize(r.taille ?? r.Taille ?? r.TAILLE ?? "");
-    let price = r.prix_tvac ?? r.Prix_TVAC ?? r.PRIX_TVAC ?? r.prix ?? r.Prix ?? "";
-
-    // ✅ stock (vide = 0)
-    let stockRaw =
-      r.disponible ??
-      r.Disponible ??
-      r.DISPO ??
-      r.dispo ??
-      r.stock ??
-      r.Stock ??
-      "";
-
-    let stockVal = String(stockRaw).trim() === ""
-      ? 0
-      : Number(String(stockRaw).replace(",", "."));
-
-    if(!Number.isFinite(stockVal)) stockVal = 0;
-
-    if(!path) continue;
-
-    path = path.replaceAll("\\", "/").replace(/^\.?\//, "");
-    if(path.startsWith("collecteur/")) path = "collecteurs/" + path.slice("collecteur/".length);
-
-    if(typeof price === "string") price = price.replace(",", ".").trim();
-    const num = Number(price);
-
-    if(Number.isFinite(num)){
-      const k = getKey(path, taille);
-      map[k] = num;
-      stock[k] = stockVal; // stock piloté par excel (vide => 0)
+      catButtons.querySelectorAll("button[data-cat]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeCat = btn.dataset.cat;
+          syncCategoryUI();
+          render();
+        });
+      });
     }
-  }
 
-  return { map, stock };
-}
+    function buildCatSelect() {
+      catSelect.innerHTML = categories
+        .map(c => `<option value="${c.id}">${c.label}</option>`)
+        .join("");
 
-function buildSizesByPath(priceMap){
-  const idx = Object.create(null);
+      catSelect.addEventListener("change", () => {
+        activeCat = catSelect.value;
+        syncCategoryUI();
+        render();
+      });
+    }
 
-  for(const k of Object.keys(priceMap)){
-    const sep = k.indexOf("|");
-    if(sep === -1) continue;
+    function syncCategoryUI() {
+      if (catSelect) catSelect.value = activeCat;
 
-    const pathKey = k.slice(0, sep);
-    const taille = normalizeSize(k.slice(sep + 1));
-    if(!pathKey || !taille) continue;
+      document.querySelectorAll("#catButtons .catBtn").forEach(b => {
+        b.classList.toggle("active", b.dataset.cat === activeCat);
+      });
 
-    if(/\.(png|jpg|jpeg|webp)$/i.test(taille)) continue;
+      fitCategoryButtons();
+    }
 
-    (idx[pathKey] ||= []).push(taille);
-  }
+    function fitCategoryButtons() {
+      if (!catButtons) return;
+      if (getComputedStyle(catButtons).display === "none") return;
 
-  const collator = new Intl.Collator("fr", { numeric: true, sensitivity: "base" });
+      const root = document.documentElement;
 
-  for (const p of Object.keys(idx)) {
-    const unique = Array.from(new Set(idx[p]));
-    const allNumeric = unique.every(v => /^\d+(?:[.,]\d+)?$/.test(String(v).trim()));
+      const presets = [
+        { font: 12, py: 6, px: 10, gap: 6 },
+        { font: 11, py: 5, px: 9, gap: 6 },
+        { font: 10, py: 5, px: 8, gap: 5 },
+        { font: 9, py: 4, px: 7, gap: 5 }
+      ];
 
-    idx[p] = allNumeric
-      ? unique.sort((a, b) => Number(String(a).replace(",", ".")) - Number(String(b).replace(",", ".")))
-      : unique.sort((a, b) => collator.compare(String(a), String(b)));
-  }
+      const apply = (p) => {
+        root.style.setProperty("--cat-font", p.font + "px");
+        root.style.setProperty("--cat-py", p.py + "px");
+        root.style.setProperty("--cat-px", p.px + "px");
+        root.style.setProperty("--cat-gap", p.gap + "px");
+      };
 
-  return idx;
-}
+      const fits = () => catButtons.scrollWidth <= catButtons.clientWidth + 1;
 
-async function loadPricesFromFolder(){
-  try{
-    const files = await fetchJson(PRICE_MANIFEST_URL);
-    if(!Array.isArray(files) || files.length === 0) throw new Error("manifest vide ou invalide");
+      catButtons.style.overflowX = "hidden";
 
-    const merged = Object.create(null);
-    const mergedStock = Object.create(null);
+      apply(presets[0]);
+      if (fits()) return;
 
-    for(const fname of files){
-      const url = `prix/${fname}`;
-      try{
-        const { map, stock } = await fetchXlsxAsPriceMap(url);
-        for(const k of Object.keys(map)) merged[k] = map[k];
-        for(const k of Object.keys(stock)) mergedStock[k] = stock[k];
-      }catch(e){
-        console.warn("Fichier prix ignoré:", url, e);
+      for (let i = 1; i < presets.length; i++) {
+        apply(presets[i]);
+        if (fits()) return;
+      }
+
+      catButtons.style.overflowX = "auto";
+      catButtons.style.webkitOverflowScrolling = "touch";
+    }
+
+    function normalizeSize(s) {
+      return String(s || "").trim();
+    }
+
+    function getKey(path, taille) {
+      return `${path}|${normalizeSize(taille)}`;
+    }
+
+    function stockLabelFor(key) {
+      // règle: si pas de valeur => 0 => rupture
+      const v = Number(STOCK_MAP[key]);
+      return (v > 0) ? "✅ En stock" : "⚠️ Rupture";
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
+      return res.json();
+    }
+
+    async function fetchXlsxAsPriceMap(xlsxUrl) {
+      const res = await fetch(xlsxUrl, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} sur ${xlsxUrl}`);
+
+      const buf = await res.arrayBuffer();
+      const wb = XLSX.read(buf, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      if (!ws) throw new Error(`Feuille Excel introuvable dans ${xlsxUrl}`);
+
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: "", raw: false });
+
+      const map = Object.create(null);
+      const stock = Object.create(null);
+
+      for (const r of rows) {
+        let path = String(r.path || r.Path || r.PATH || "").trim();
+        const taille = normalizeSize(r.taille ?? r.Taille ?? r.TAILLE ?? "");
+        let price = r.prix_tvac ?? r.Prix_TVAC ?? r.PRIX_TVAC ?? r.prix ?? r.Prix ?? "";
+
+        // ✅ stock (vide = 0)
+        let stockRaw =
+          r.disponible ??
+          r.Disponible ??
+          r.DISPO ??
+          r.dispo ??
+          r.stock ??
+          r.Stock ??
+          "";
+
+        let stockVal = String(stockRaw).trim() === ""
+          ? 0
+          : Number(String(stockRaw).replace(",", "."));
+
+        if (!Number.isFinite(stockVal)) stockVal = 0;
+
+        if (!path) continue;
+
+        path = path.replaceAll("\\", "/").replace(/^\.?\//, "");
+        if (path.startsWith("collecteur/")) path = "collecteurs/" + path.slice("collecteur/".length);
+
+        if (typeof price === "string") price = price.replace(",", ".").trim();
+        const num = Number(price);
+
+        if (Number.isFinite(num)) {
+          const k = getKey(path, taille);
+          map[k] = num;
+          stock[k] = stockVal; // stock piloté par excel (vide => 0)
+        }
+      }
+
+      return { map, stock };
+    }
+
+    function buildSizesByPath(priceMap) {
+      const idx = Object.create(null);
+
+      for (const k of Object.keys(priceMap)) {
+        const sep = k.indexOf("|");
+        if (sep === -1) continue;
+
+        const pathKey = k.slice(0, sep);
+        const taille = normalizeSize(k.slice(sep + 1));
+        if (!pathKey || !taille) continue;
+
+        if (/\.(png|jpg|jpeg|webp)$/i.test(taille)) continue;
+
+        (idx[pathKey] ||= []).push(taille);
+      }
+
+      const collator = new Intl.Collator("fr", { numeric: true, sensitivity: "base" });
+
+      for (const p of Object.keys(idx)) {
+        const unique = Array.from(new Set(idx[p]));
+        const allNumeric = unique.every(v => /^\d+(?:[.,]\d+)?$/.test(String(v).trim()));
+
+        idx[p] = allNumeric
+          ? unique.sort((a, b) => Number(String(a).replace(",", ".")) - Number(String(b).replace(",", ".")))
+          : unique.sort((a, b) => collator.compare(String(a), String(b)));
+      }
+
+      return idx;
+    }
+
+    async function loadPricesFromFolder() {
+      try {
+        const files = await fetchJson(PRICE_MANIFEST_URL);
+        if (!Array.isArray(files) || files.length === 0) throw new Error("manifest vide ou invalide");
+
+        const merged = Object.create(null);
+        const mergedStock = Object.create(null);
+
+        for (const fname of files) {
+          const url = `prix/${fname}`;
+          try {
+            const { map, stock } = await fetchXlsxAsPriceMap(url);
+            for (const k of Object.keys(map)) merged[k] = map[k];
+            for (const k of Object.keys(stock)) mergedStock[k] = stock[k];
+          } catch (e) {
+            console.warn("Fichier prix ignoré:", url, e);
+          }
+        }
+
+        PRICE_MAP = merged;
+        STOCK_MAP = mergedStock;
+        SIZES_BY_PATH = buildSizesByPath(PRICE_MAP);
+
+      } catch (e) {
+        PRICE_MAP = Object.create(null);
+        STOCK_MAP = Object.create(null);
+        SIZES_BY_PATH = Object.create(null);
+        console.error(e);
       }
     }
 
-    PRICE_MAP = merged;
-    STOCK_MAP = mergedStock;
-    SIZES_BY_PATH = buildSizesByPath(PRICE_MAP);
-
-  }catch(e){
-    PRICE_MAP = Object.create(null);
-    STOCK_MAP = Object.create(null);
-    SIZES_BY_PATH = Object.create(null);
-    console.error(e);
-  }
-}
-
-function formatPrice(v){
-  if(!Number.isFinite(v)) return "";
-  return (Math.round(v * 100) / 100).toFixed(2);
-}
-
-function getStoredSize(key, fallback){
-  try{
-    const v = localStorage.getItem("size:" + key);
-    return v ? v : fallback;
-  }catch{ return fallback; }
-}
-function setStoredSize(key, val){
-  try{ localStorage.setItem("size:" + key, val); }catch{}
-}
-
-function render(){
-  const query = "";
-
-  const cat = activeCat;
-  if(!cat || !IMAGES[cat]){
-    app.innerHTML = `<p class="muted">Aucune catégorie à afficher.</p>`;
-    return;
-  }
-
-  const files = (IMAGES[cat] || []).filter(f => f.toLowerCase().includes(query));
-  if(!files.length){
-    app.innerHTML = `<p class="muted">Aucune image à afficher.</p>`;
-    return;
-  }
-
-  let html = `<div class="grid">`;
-
-  for(const f of files){
-    const pathKey = `${cat}/${f}`;
-    const src = `${cat}/${encodeURIComponent(f)}`;
-
-    const label = (DISPLAY_NAMES[pathKey] ?? f)
-      .replace(/\.(png|jpg|jpeg|webp)$/i, "")
-      .replace(/-/g, " ");
-
-    let options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
-      ? SIZES_BY_PATH[pathKey]
-      : getSizeOptions(cat, f);
-
-    const defaultSize = options[0] || "";
-    let currentSize = getStoredSize(pathKey, defaultSize);
-
-    if(currentSize && !options.includes(currentSize)){
-      currentSize = defaultSize;
-      setStoredSize(pathKey, currentSize);
+    function formatPrice(v) {
+      if (!Number.isFinite(v)) return "";
+      return (Math.round(v * 100) / 100).toFixed(2);
     }
 
-    const k = getKey(pathKey, currentSize);
-    const price = PRICE_MAP[k];
-    const stockText = stockLabelFor(k);
+    function getStoredSize(key, fallback) {
+      try {
+        const v = localStorage.getItem("size:" + key);
+        return v ? v : fallback;
+      } catch { return fallback; }
+    }
+    function setStoredSize(key, val) {
+      try { localStorage.setItem("size:" + key, val); } catch { }
+    }
 
-    const selectId = "s_" + btoa(pathKey).replace(/=+/g,'');
-    const priceId  = "p_" + btoa(pathKey).replace(/=+/g,'');
-    const stockId  = "st_" + btoa(pathKey).replace(/=+/g,'');
+    function render() {
+      const query = "";
 
-    html += `
+      const cat = activeCat;
+      if (!cat || !IMAGES[cat]) {
+        app.innerHTML = `<p class="muted">Aucune catégorie à afficher.</p>`;
+        return;
+      }
+
+      const files = (IMAGES[cat] || []).filter(f => f.toLowerCase().includes(query));
+      if (!files.length) {
+        app.innerHTML = `<p class="muted">Aucune image à afficher.</p>`;
+        return;
+      }
+
+      let html = `<div class="grid">`;
+
+      for (const f of files) {
+        const pathKey = `${cat}/${f}`;
+        const src = `${cat}/${encodeURIComponent(f)}`;
+
+        const label = (DISPLAY_NAMES[pathKey] ?? f)
+          .replace(/\.(png|jpg|jpeg|webp)$/i, "")
+          .replace(/-/g, " ");
+
+        let options = (SIZES_BY_PATH[pathKey] && SIZES_BY_PATH[pathKey].length)
+          ? SIZES_BY_PATH[pathKey]
+          : getSizeOptions(cat, f);
+
+        const defaultSize = options[0] || "";
+        let currentSize = getStoredSize(pathKey, defaultSize);
+
+        if (currentSize && !options.includes(currentSize)) {
+          currentSize = defaultSize;
+          setStoredSize(pathKey, currentSize);
+        }
+
+        const k = getKey(pathKey, currentSize);
+        const price = PRICE_MAP[k];
+        const stockText = stockLabelFor(k);
+
+        const selectId = "s_" + btoa(pathKey).replace(/=+/g, '');
+        const priceId = "p_" + btoa(pathKey).replace(/=+/g, '');
+        const stockId = "st_" + btoa(pathKey).replace(/=+/g, '');
+
+        html += `
       <figure>
-        <a class="thumb" href="${src}" target="_blank" rel="noopener">
-          <img src="${src}" alt="${label}"
-            onerror="this.style.display='none'; this.closest('figure').insertAdjacentHTML('beforeend','<div class=\\'missing\\'>❌ Introuvable : ${src}</div>')">
-        </a>
+  <figcaption>${label}</figcaption>
 
-        <figcaption>${label}</figcaption>
+  <a class="thumb" href="${src}" target="_blank" rel="noopener">
+    <img src="${src}" alt="${label}"
+      onerror="this.style.display='none'; this.closest('figure').insertAdjacentHTML('beforeend','<div class=\\'missing\\'>❌ Introuvable : ${src}</div>')">
+  </a>
 
-        <div class="stock" id="${stockId}">${stockText}</div>
+  <div class="stock" id="${stockId}">${stockText}</div>
 
-        <div class="size">
-          <label for="${selectId}">Taille</label>
-          <select id="${selectId}" data-path="${pathKey}" data-stock-id="${stockId}">
-            ${options.map(o => `<option value="${o}" ${o===currentSize?'selected':''}>${o}</option>`).join("")}
-          </select>
-        </div>
+  <div class="size">
+    <select id="${selectId}" data-path="${pathKey}" data-stock-id="${stockId}">
+      ${options.map(o => `<option value="${o}" ${o === currentSize ? 'selected' : ''}>${o}</option>`).join("")}
+    </select>
+  </div>
 
-        <div class="price">
-          <label for="${priceId}">Tvac €</label>
-          <input
-            id="${priceId}"
-            type="text"
-            inputmode="decimal"
-            value="${price !== undefined ? formatPrice(price) : ""}"
-            placeholder="—"
-            readonly
-            title="Prix chargé depuis les fichiers du dossier prix/ (modifiable via Excel)"
-          />
-        </div>
-      </figure>
+  <div class="price">
+    <label for="${priceId}">Tvac €</label>
+    <input
+      id="${priceId}"
+      type="text"
+      inputmode="decimal"
+      value="${price !== undefined ? formatPrice(price) : ""}"
+      placeholder="—"
+      readonly
+      title="Prix chargé depuis les fichiers du dossier prix/ (modifiable via Excel)"
+    />
+  </div>
+</figure>
+
     `;
-  }
+      }
 
-  html += `</div>`;
-  app.innerHTML = html;
+      html += `</div>`;
+      app.innerHTML = html;
 
-  document.querySelectorAll('select[data-path]').forEach(sel => {
-    sel.addEventListener("change", () => {
-      const pathKey = sel.dataset.path;
-      const taille = normalizeSize(sel.value);
-      setStoredSize(pathKey, taille);
+      document.querySelectorAll('select[data-path]').forEach(sel => {
+        sel.addEventListener("change", () => {
+          const pathKey = sel.dataset.path;
+          const taille = normalizeSize(sel.value);
+          setStoredSize(pathKey, taille);
 
-      const k = getKey(pathKey, taille);
+          const k = getKey(pathKey, taille);
 
-      // prix
-      const price = PRICE_MAP[k];
-      const priceId  = "p_" + btoa(pathKey).replace(/=+/g,'');
-      const inp = document.getElementById(priceId);
-      if(inp) inp.value = price !== undefined ? formatPrice(price) : "";
+          // prix
+          const price = PRICE_MAP[k];
+          const priceId = "p_" + btoa(pathKey).replace(/=+/g, '');
+          const inp = document.getElementById(priceId);
+          if (inp) inp.value = price !== undefined ? formatPrice(price) : "";
 
-      // stock
-      const stockId = sel.dataset.stockId;
-      const st = document.getElementById(stockId);
-      if(st) st.textContent = stockLabelFor(k);
-    });
-  });
-}
+          // stock
+          const stockId = sel.dataset.stockId;
+          const st = document.getElementById(stockId);
+          if (st) st.textContent = stockLabelFor(k);
+        });
+      });
+    }
 
-(async function init(){
-  await loadPricesFromFolder();
-  buildCatButtons();
-  buildCatSelect();
-  syncCategoryUI();
-  render();
+    (async function init() {
+      await loadPricesFromFolder();
+      buildCatButtons();
+      buildCatSelect();
+      syncCategoryUI();
+      render();
 
-  window.addEventListener("resize", () => {
-    fitCategoryButtons();
-  });
-})();
-</script>
-<!-- DEPLOY: 2026-01-14 -->
+      window.addEventListener("resize", () => {
+        fitCategoryButtons();
+      });
+    })();
+  </script>
 </body>
+
 </html>
