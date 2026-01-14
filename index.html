@@ -124,6 +124,7 @@
       font-size: 12px;
     }
 
+    /* ===== PRIX EN GROS (SANS CASE) ===== */
     .price {
       margin-top: auto;
       padding: 6px 0;
@@ -133,9 +134,9 @@
 
     .price-big {
       display: flex;
-      align-items: flex-start;
-      gap: 2px;
-      font-weight: 800;
+      align-items: flex-end;
+      gap: 6px;
+      font-weight: 900;
       color: #222;
     }
 
@@ -146,16 +147,8 @@
 
     .price-big .currency {
       font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .price input {
-      width: 4.5em;
-      text-align: center;
-      padding: 6px 6px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 12px;
+      line-height: 1;
+      margin-bottom: 4px;
     }
 
     header.top {
@@ -431,7 +424,6 @@
       "tube-alpex/Tube-Alpex-gaine-bleue.png": "Tube Alpex gainé bleu"
     };
 
-
     /** Options taille (fallback uniquement si pas de tailles dans l’Excel) */
     const CAT_SIZES = {
       "a-souder": ["3/8", "1/2", "3/4"],
@@ -623,8 +615,6 @@
       return options[0] || "";
     }
 
-
-
     async function fetchJson(url) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
@@ -798,46 +788,40 @@
 
         setStoredSize(pathKey, currentSize);
 
-
         const k = getKey(pathKey, currentSize);
         const price = PRICE_MAP[k];
         const stockText = stockLabelFor(k);
 
         const selectId = "s_" + btoa(pathKey).replace(/=+/g, '');
-        const priceId = "p_" + btoa(pathKey).replace(/=+/g, '');
         const stockId = "st_" + btoa(pathKey).replace(/=+/g, '');
 
         html += `
       <figure>
-  <figcaption>${label}</figcaption>
+        <figcaption>${label}</figcaption>
 
-  <a class="thumb" href="${src}" target="_blank" rel="noopener">
-    <img src="${src}" alt="${label}"
-      onerror="this.style.display='none'; this.closest('figure').insertAdjacentHTML('beforeend','<div class=\\'missing\\'>❌ Introuvable : ${src}</div>')">
-  </a>
+        <a class="thumb" href="${src}" target="_blank" rel="noopener">
+          <img src="${src}" alt="${label}"
+            onerror="this.style.display='none'; this.closest('figure').insertAdjacentHTML('beforeend','<div class=\\'missing\\'>❌ Introuvable : ${src}</div>')">
+        </a>
 
-  <div class="stock" id="${stockId}">${stockText}</div>
+        <div class="stock" id="${stockId}">${stockText}</div>
 
-  <div class="size">
-    <select id="${selectId}" data-path="${pathKey}" data-stock-id="${stockId}">
-      ${options.map(o => `<option value="${o}" ${o === currentSize ? 'selected' : ''}>${o}</option>`).join("")}
-    </select>
-  </div>
+        <div class="size">
+          <select id="${selectId}" data-path="${pathKey}" data-stock-id="${stockId}">
+            ${options.map(o => `<option value="${o}" ${o === currentSize ? 'selected' : ''}>${o}</option>`).join("")}
+          </select>
+        </div>
 
-  <div class="price">
-    <label for="${priceId}">Tvac €</label>
-    <input
-      id="${priceId}"
-      type="text"
-      inputmode="decimal"
-      value="${price !== undefined ? formatPrice(price) : ""}"
-      placeholder="—"
-      readonly
-      title="Prix chargé depuis les fichiers du dossier prix/ (modifiable via Excel)"
-    />
-  </div>
-</figure>
-
+        <div class="price">
+          ${price !== undefined
+            ? `<div class="price-big">
+                 <span class="amount">${formatPrice(price)}</span>
+                 <span class="currency">€</span>
+               </div>`
+            : `<div class="price-big muted">—</div>`
+          }
+        </div>
+      </figure>
     `;
       }
 
@@ -852,11 +836,20 @@
 
           const k = getKey(pathKey, taille);
 
-          // prix
+          // prix (mise à jour sans input)
           const price = PRICE_MAP[k];
-          const priceId = "p_" + btoa(pathKey).replace(/=+/g, '');
-          const inp = document.getElementById(priceId);
-          if (inp) inp.value = price !== undefined ? formatPrice(price) : "";
+          const figure = sel.closest("figure");
+          const priceBox = figure ? figure.querySelector(".price") : null;
+
+          if (priceBox) {
+            priceBox.innerHTML =
+              price !== undefined
+                ? `<div class="price-big">
+                     <span class="amount">${formatPrice(price)}</span>
+                     <span class="currency">€</span>
+                   </div>`
+                : `<div class="price-big muted">—</div>`;
+          }
 
           // stock
           const stockId = sel.dataset.stockId;
