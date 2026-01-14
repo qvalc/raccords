@@ -233,10 +233,13 @@ const IMAGES = {
 
   /* ✅ NOUVEAU : Tube Alpex */
   "tube-alpex": [
-    "Tube-Alpex.png",
-    "Tube-Alpex-isolé-rouge.png",
-    "Tube-Alpex-isolé-bleu.png"
-  ]
+  "Tube-Alpex.png",
+  "Tube-Alpex-isolé-rouge.png",
+  "Tube-Alpex-isolé-bleu.png",
+  "Tube-Alpex-gaine-rouge.png",
+  "Tube-Alpex-gaine-bleue.png"
+]
+
 };
 
 /** ✅ NOMS D’AFFICHAGE PERSONNALISÉS (OPTIONNELS) */
@@ -424,7 +427,7 @@ async function fetchXlsxAsPriceMap(xlsxUrl){
   const ws = wb.Sheets[wb.SheetNames[0]];
   if(!ws) throw new Error(`Feuille Excel introuvable dans ${xlsxUrl}`);
 
-  const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: "", raw: false });
 
   const map = Object.create(null);
 
